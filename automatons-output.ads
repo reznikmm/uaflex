@@ -8,6 +8,7 @@ package Automatons.Output is
    procedure Generate
      (A     : in DFA;
       Pkg   : in String;
-      Start : in Start_Names);
+      Start : in Start_Names;
+      Dir   : in String);
 
 end Automatons.Output;

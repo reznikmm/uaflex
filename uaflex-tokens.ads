@@ -1,4 +1,4 @@
-package Tokens is
+package UAFlex.Tokens is
 
    procedure Get_Token
      (Name   : in     String;
@@ -8,4 +8,4 @@ package Tokens is
 
    function Token_Name (Index : Positive) return String;
 
-end Tokens;
+end UAFlex.Tokens;
