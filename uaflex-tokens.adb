@@ -1,6 +1,6 @@
 with Ada.Strings.Unbounded;
 
-package body Tokens is
+package body UAFlex.Tokens is
 
    package U renames Ada.Strings.Unbounded;
 
@@ -69,5 +69,5 @@ package body Tokens is
       return "";
    end Token_Name;
 
-end Tokens;
+end UAFlex.Tokens;
 
