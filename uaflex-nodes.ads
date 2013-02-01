@@ -39,7 +39,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 2997 $ $Date: 2012-05-16 22:31:50 +0300 (Ср., 16 мая 2012) $
 ------------------------------------------------------------------------------
 with League.String_Vectors;
 with League.Strings;
@@ -47,7 +47,7 @@ with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;
 with Matreshka.Internals.Finite_Automatons;
 
-package Nodes is
+package UAFLEX.Nodes is
 
    type Node_Kind is (Text, Rule, Macro, Name_List);
 
@@ -122,4 +122,4 @@ package Nodes is
       Action : League.Strings.Universal_String;
       Line   : Positive);
 
-end Nodes;
+end UAFLEX.Nodes;

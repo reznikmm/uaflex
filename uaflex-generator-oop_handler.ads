@@ -1,7 +1,7 @@
 with League.Strings;
 with League.String_Vectors;
 
-package Generator.OOP_Handler is
+package UAFLEX.Generator.OOP_Handler is
 
    procedure Go
      (Actions : League.String_Vectors.Universal_String_Vector;
@@ -19,4 +19,4 @@ package Generator.OOP_Handler is
       Scanner : League.Strings.Universal_String;
       Tokens  : League.Strings.Universal_String);
 
-end Generator.OOP_Handler;
+end UAFLEX.Generator.OOP_Handler;

@@ -39,16 +39,124 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 3692 $ $Date: 2013-02-01 21:53:17 +0200 (Пт., 01 февр. 2013) $
 ------------------------------------------------------------------------------
 
-with Matreshka.Internals.Finite_Automatons;
+with Ada.Command_Line;
+with Ada.Wide_Wide_Text_IO;
+with League.Application;
+with League.Strings;
 
-package Debug is
+with UAFLEX.Run;
 
-   procedure Print;
+procedure UAFLEX.Driver is
 
-   procedure Print_Character_Classes
-     (Vector : Matreshka.Internals.Finite_Automatons.Vectors.Vector);
+   procedure Read_Arguments;
 
-end Debug;
+   procedure Print_Usage;
+
+   function "+"
+     (Item : Wide_Wide_String)
+     return League.Strings.Universal_String
+       renames League.Strings.To_Universal_String;
+
+   Handler : League.Strings.Universal_String;
+   Input   : League.Strings.Universal_String;
+   Tokens  : League.Strings.Universal_String;
+   Types   : League.Strings.Universal_String;
+   Scanner : League.Strings.Universal_String;
+
+   -----------------
+   -- Print_Usage --
+   -----------------
+
+   procedure Print_Usage is
+      use Ada.Wide_Wide_Text_IO;
+   begin
+      Put_Line
+        (Standard_Error,
+         "Usage: uaflex <unit-options> input_file");
+      Put_Line
+        (Standard_Error,
+         "  where <unit-options> contains:");
+      Put_Line
+        (Standard_Error,
+         "    --types Types_Unit - unit for type and condition declarations");
+      Put_Line
+        (Standard_Error,
+         "    --handler Handler_Unit - unit for abstract handler declaration");
+      Put_Line
+        (Standard_Error,
+         "    --scanner Scanner_Unit - unit where scanner is located");
+      Put_Line
+        (Standard_Error,
+         "    --tokens Tokens_Unit - unit where Token type is declared");
+   end Print_Usage;
+
+   --------------------
+   -- Read_Arguments --
+   --------------------
+
+   procedure Read_Arguments is
+      use League.Strings;
+      Is_Types   : constant Universal_String := +"--types";
+      Is_Scanner : constant Universal_String := +"--scanner";
+      Is_Tokens  : constant Universal_String := +"--tokens";
+      Is_Handler : constant Universal_String := +"--handler";
+
+      Last  : constant Natural := League.Application.Arguments.Length;
+      Index : Positive := 1;
+   begin
+      while Index <= Last loop
+         declare
+            Next : constant League.Strings.Universal_String :=
+              League.Application.Arguments.Element (Index);
+         begin
+            if Index = Last then
+               Input := Next;
+            elsif Next = Is_Types then
+               Index := Index + 1;
+               Types := League.Application.Arguments.Element (Index);
+            elsif Next = Is_Scanner then
+               Index := Index + 1;
+               Scanner := League.Application.Arguments.Element (Index);
+            elsif Next = Is_Tokens then
+               Index := Index + 1;
+               Tokens := League.Application.Arguments.Element (Index);
+            elsif Next = Is_Handler then
+               Index := Index + 1;
+               Handler := League.Application.Arguments.Element (Index);
+            end if;
+
+            Index := Index + 1;
+         end;
+      end loop;
+   end Read_Arguments;
+
+   Success : Boolean;
+begin
+   Read_Arguments;
+
+   if Handler.Is_Empty or
+     Input.Is_Empty or
+     Tokens.Is_Empty or
+     Types.Is_Empty or
+     Scanner.Is_Empty
+   then
+      Print_Usage;
+      return;
+   end if;
+
+   UAFLEX.Run
+     (Handler,
+      Input,
+      Tokens,
+      Types,
+      Scanner,
+      Success);
+
+   if not Success then
+      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
+   end if;
+
+end UAFLEX.Driver;

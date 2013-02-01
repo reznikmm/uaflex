@@ -1,4 +1,4 @@
-package AAA is
+package UAFLEX.Lexer_Types is
 
    type State is mod 82;
    subtype Valid_State is State range 0 .. State'Last - 1;
@@ -13,4 +13,4 @@ package AAA is
 
    type Rule_Index is range 0 .. 19;
 
-end AAA;
+end UAFLEX.Lexer_Types;

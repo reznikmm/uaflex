@@ -8,7 +8,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright (C) 2011, Vadim Godunko <vgodunko@gmail.com>                   --
+-- Copyright © 2011-2012, Vadim Godunko <vgodunko@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -39,44 +39,12 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 2446 $ $Date: 2012-01-15 16:07:17 +0200 (Вс., 15 янв. 2012) $
 ------------------------------------------------------------------------------
 
-%x INRULE SECT2 DEF NAMELIST
+package UAFLEX.Expand is
 
-NAME           [a-zA-Z][a-zA-Z0-9_]*
-SPACE          [\t ]+
-OPTSPACE       [\t ]*
-NO_SPACE       [^\n\t ]+
-CLASS          "["[^\n\]]+"]"
-STRING         \"[^"\n]*\"
-MASKED_SPACE   "\\ "
-ADA_STRING     \"([^"]+|\"\")*\"
+   procedure RegExps;
+   --  Expand macros inside regexp. Convert uaflex regexp to League.Regexps
 
-%%
-
-{OPTSPACE}"--"[^\n]*\n					{Skip_Line}
-"%"[Ss](tart)?						{On_Start}
-"%"[Xx]							{On_Exclusive}
-{NAME}							{On_Name}
-"%%"[^\n]*\n						{On_Section_End}
-{OPTSPACE}\n						{Skip_Line}
-
-<DEF>{SPACE}						{Skip}
-<DEF>[^ \t\n][^\n]*					{On_Regexp}
-<DEF>\n							{End_Of_Macro}
-
-<NAMELIST>\n						{End_Of_Name_List}
-<NAMELIST>{NAME}					{On_Name_2}
-<NAMELIST>{SPACE}					{Skip}
-
-<SECT2>{OPTSPACE}"--"[^\n]*\n				{Skip_Line}
-<SECT2>({NO_SPACE}|{CLASS}|{STRING}|{MASKED_SPACE})+	{On_Regexp_2}
-<SECT2>{OPTSPACE}\n					{Skip_Line}
-<SECT2>"%%"[^\n]*\n					{On_Section_End_2}
-
-<INRULE>\{([^}"]+|{ADA_STRING})*\}			{On_Action}
-<INRULE>{SPACE}						{Skip}
-<INRULE>{OPTSPACE}\n					{On_End_Of_Rule}
-
-%%
+end UAFLEX.Expand;

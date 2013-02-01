@@ -39,14 +39,12 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 2446 $ $Date: 2012-01-15 16:07:17 +0200 (Вс., 15 янв. 2012) $
 ------------------------------------------------------------------------------
 
-with League.Text_Codecs;
-with Ada.Streams;
 with Ada.Wide_Wide_Text_IO;
 
-package body Nodes is
+package body UAFLEX.Nodes is
 
    --------------
    -- Add_Rule --
@@ -81,7 +79,9 @@ package body Nodes is
 
       procedure Add
         (Name      : League.Strings.Universal_String;
-         Condition : in out Start_Condition) is
+         Condition : in out Start_Condition)
+      is
+         pragma Unreferenced (Name);
       begin
          Condition.Rules.Append (Index);
       end Add;
@@ -189,4 +189,4 @@ package body Nodes is
       return To_Node (Value.Slice (2, Value.Length - 1));
    end To_Action;
 
-end Nodes;
+end UAFLEX.Nodes;

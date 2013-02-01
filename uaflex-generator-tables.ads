@@ -39,13 +39,25 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 3627 $ $Date: 2012-12-29 11:26:15 +0200 (Сб., 29 дек. 2012) $
 ------------------------------------------------------------------------------
+with Matreshka.Internals.Finite_Automatons;
+with League.Strings;
 
-package Generator is
+package UAFLEX.Generator.Tables is
 
-   pragma Pure;
+   procedure Go
+     (DFA     : Matreshka.Internals.Finite_Automatons.DFA;
+      Unit    : League.Strings.Universal_String;
+      File    : String;
+      Types   : League.Strings.Universal_String;
+      Scanner : League.Strings.Universal_String;
+      Classes : Matreshka.Internals.Finite_Automatons.Vectors.Vector);
 
-   function Image (X : Natural) return Wide_Wide_String;
+   procedure Types
+     (DFA     : Matreshka.Internals.Finite_Automatons.DFA;
+      Unit    : League.Strings.Universal_String;
+      File    : String;
+      Classes : out Matreshka.Internals.Finite_Automatons.Vectors.Vector);
 
-end Generator;
+end UAFLEX.Generator.Tables;

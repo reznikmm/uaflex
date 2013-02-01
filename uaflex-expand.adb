@@ -39,10 +39,10 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 2447 $ $Date: 2012-01-15 17:39:53 +0200 (Вс., 15 янв. 2012) $
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
-with Nodes;
+with UAFLEX.Nodes;
 with Matreshka.Internals.Unicode.Ucd;
 with League.Character_Sets.Internals;
 with League.Characters;
@@ -50,7 +50,7 @@ with League.Regexps;
 with League.Strings;
 with League.String_Vectors;
 
-package body Expand is
+package body UAFLEX.Expand is
 
    procedure Expand_Macro
      (Text : in out League.Strings.Universal_String;
@@ -79,7 +79,7 @@ package body Expand is
        (Matreshka.Internals.Unicode.Ucd.Pattern_Syntax)
      or
      League.Character_Sets.Internals.To_Set
-       (Matreshka.Internals.Unicode.Ucd.Pattern_White_Space );
+       (Matreshka.Internals.Unicode.Ucd.Pattern_White_Space);
 
    Operations : constant League.Character_Sets.Universal_Character_Set :=
      League.Character_Sets.To_Set ("\{}[]^$?.*+|()");
@@ -274,4 +274,4 @@ package body Expand is
       Text := Result;
    end To_Regexp;
 
-end Expand;
+end UAFLEX.Expand;

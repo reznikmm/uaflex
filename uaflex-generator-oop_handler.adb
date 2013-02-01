@@ -1,8 +1,7 @@
-with Matreshka.Internals.Finite_Automatons;
 with Ada.Wide_Wide_Text_IO;
-with Nodes;
+with UAFLEX.Nodes;
 
-package body Generator.OOP_Handler is
+package body UAFLEX.Generator.OOP_Handler is
 
    --------
    -- Go --
@@ -17,14 +16,8 @@ package body Generator.OOP_Handler is
       Tokens  : League.Strings.Universal_String)
    is
       procedure P (Text : Wide_Wide_String);
-      procedure N (Text : Wide_Wide_String);
 
       Output  : Ada.Wide_Wide_Text_IO.File_Type;
-
-      procedure N (Text : Wide_Wide_String) is
-      begin
-         Ada.Wide_Wide_Text_IO.Put (Output, Text);
-      end N;
 
       procedure P (Text : Wide_Wide_String) is
       begin
@@ -135,4 +128,4 @@ package body Generator.OOP_Handler is
 
       Ada.Wide_Wide_Text_IO.Close (Output);
    end On_Accept;
-end Generator.OOP_Handler;
+end UAFLEX.Generator.OOP_Handler;

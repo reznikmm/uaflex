@@ -39,7 +39,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 2446 $ $Date: 2012-01-15 16:07:17 +0200 (Вс., 15 янв. 2012) $
 ------------------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;

@@ -1,7 +1,6 @@
-with Aaa.Scanners;
-with Aaa;
+with UAFLEX.Scanners;
 
-package body UAFLEX_Handler is
+package body UAFLEX.Handler is
 
    --------------------
    -- Check_New_Line --
@@ -21,16 +20,16 @@ package body UAFLEX_Handler is
 
    procedure End_Of_Macro
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
-      pragma Unreferenced (Token);
+      pragma Unreferenced (Token, Rule);
       pragma Unreferenced (Skip);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.INITIAL);
+      Scanner.Set_Start_Condition (Lexer_Types.INITIAL);
       Self.New_Line (Scanner);
    end End_Of_Macro;
 
@@ -40,14 +39,15 @@ package body UAFLEX_Handler is
 
    procedure End_Of_Name_List
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
+      pragma Unreferenced (Rule);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.INITIAL);
+      Scanner.Set_Start_Condition (Lexer_Types.INITIAL);
       Token := Parser_Tokens.Name_List_End;
       Skip := False;
       Self.New_Line (Scanner);
@@ -68,7 +68,8 @@ package body UAFLEX_Handler is
 
    procedure New_Line
      (Self    : not null access Handler'Class;
-      Scanner : not null access Aaa.Scanners.Scanner'Class) is
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class) is
+      pragma Unreferenced (Scanner);
    begin
       Self.Line_Feed := True;
    end New_Line;
@@ -79,11 +80,12 @@ package body UAFLEX_Handler is
 
    procedure On_Action
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
+      pragma Unreferenced (Rule);
       NL : constant Wide_Wide_Character := Wide_Wide_Character'Val (10);
    begin
       Self.Check_New_Line;
@@ -98,16 +100,16 @@ package body UAFLEX_Handler is
 
    procedure On_End_Of_Rule
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
-      pragma Unreferenced (Token);
+      pragma Unreferenced (Token, Rule);
       pragma Unreferenced (Skip);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.SECT2);
+      Scanner.Set_Start_Condition (Lexer_Types.SECT2);
       Self.New_Line (Scanner);
    end On_End_Of_Rule;
 
@@ -117,14 +119,15 @@ package body UAFLEX_Handler is
 
    procedure On_Exclusive
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
+      pragma Unreferenced (Rule);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.NAMELIST);
+      Scanner.Set_Start_Condition (Lexer_Types.NAMELIST);
       Token := Parser_Tokens.Excl_Start;
       Skip := False;
    end On_Exclusive;
@@ -135,14 +138,15 @@ package body UAFLEX_Handler is
 
    procedure On_Name
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
+      pragma Unreferenced (Rule);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.DEF);
+      Scanner.Set_Start_Condition (Lexer_Types.DEF);
       Token := Parser_Tokens.Name;
       Skip := False;
    end On_Name;
@@ -153,12 +157,12 @@ package body UAFLEX_Handler is
 
    procedure On_Name_2
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
-      pragma Unreferenced (Scanner);
+      pragma Unreferenced (Scanner, Rule);
    begin
       Self.Check_New_Line;
       Token := Parser_Tokens.Name;
@@ -171,12 +175,12 @@ package body UAFLEX_Handler is
 
    procedure On_Regexp
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
-      pragma Unreferenced (Scanner);
+      pragma Unreferenced (Scanner, Rule);
    begin
       Self.Check_New_Line;
       Token := Parser_Tokens.Regexp;
@@ -189,14 +193,15 @@ package body UAFLEX_Handler is
 
    procedure On_Regexp_2
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
+      pragma Unreferenced (Rule);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.INRULE);
+      Scanner.Set_Start_Condition (Lexer_Types.INRULE);
       Token := Parser_Tokens.Regexp;
       Skip := False;
    end On_Regexp_2;
@@ -207,14 +212,15 @@ package body UAFLEX_Handler is
 
    procedure On_Section_End
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
+      pragma Unreferenced (Rule);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.SECT2);
+      Scanner.Set_Start_Condition (Lexer_Types.SECT2);
       Token := Parser_Tokens.Section_End;
       Skip := False;
       Self.New_Line (Scanner);
@@ -226,14 +232,15 @@ package body UAFLEX_Handler is
 
    procedure On_Section_End_2
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
+      pragma Unreferenced (Rule);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.INITIAL);
+      Scanner.Set_Start_Condition (Lexer_Types.INITIAL);
       Token := Parser_Tokens.Section_End;
       Skip := False;
       Self.New_Line (Scanner);
@@ -245,14 +252,15 @@ package body UAFLEX_Handler is
 
    procedure On_Start
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
+      pragma Unreferenced (Rule);
    begin
       Self.Check_New_Line;
-      Scanner.Set_Start_Condition (Aaa.NAMELIST);
+      Scanner.Set_Start_Condition (Lexer_Types.NAMELIST);
       Token := Parser_Tokens.Start;
       Skip := False;
    end On_Start;
@@ -263,16 +271,16 @@ package body UAFLEX_Handler is
 
    procedure Skip_Line
      (Self    : not null access Handler;
-      Scanner : not null access Aaa.Scanners.Scanner'Class;
-      Rule    : AAA.Rule_Index;
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+      Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
       Skip    : in out Boolean)
    is
-      pragma Unreferenced (Token);
+      pragma Unreferenced (Token, Rule);
       pragma Unreferenced (Skip);
    begin
       Self.Check_New_Line;
       Self.New_Line (Scanner);
    end Skip_Line;
 
-end UAFLEX_Handler;
+end UAFLEX.Handler;

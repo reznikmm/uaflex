@@ -39,7 +39,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 2505 $ $Date: 2012-02-22 00:36:44 +0200 (Ср., 22 февр. 2012) $
 ------------------------------------------------------------------------------
 
 with Ada.Containers.Generic_Array_Sort;
@@ -93,6 +93,8 @@ package body Matreshka.Internals.Graphs is
       --------------
 
       function New_Node (Self : Graph'Class) return Node is
+         procedure Resize;
+
          procedure Resize is
          begin
             if Self.Nodes = null or else
@@ -132,6 +134,7 @@ package body Matreshka.Internals.Graphs is
 
       procedure New_Edge (From, To : Node) is
          Ignore : constant Edge_Identifier := New_Edge (From, To);
+         pragma Unreferenced (Ignore);
       begin
          null;
       end New_Edge;
@@ -141,6 +144,8 @@ package body Matreshka.Internals.Graphs is
       --------------
 
       function New_Edge (From, To : Node) return Edge_Identifier is
+         procedure Resize;
+
          Self : constant Graph_Access := From.Graph;
 
          procedure Resize is

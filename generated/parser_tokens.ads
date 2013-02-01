@@ -1,8 +1,8 @@
-with  Nodes;
+with  Uaflex.Nodes;
 package Parser_Tokens is
 
 
-   subtype YYSType is Nodes.Node;
+   subtype YYSType is UAFLEX.Nodes.Node;
 
     YYLVal, YYVal : YYSType; 
     type Token is

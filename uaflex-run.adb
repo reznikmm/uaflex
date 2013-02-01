@@ -39,22 +39,19 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 3692 $ $Date: 2013-02-01 21:53:17 +0200 (Пт., 01 февр. 2013) $
 ------------------------------------------------------------------------------
 with Parser;
 
-with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Exceptions;
 with Ada.Streams.Stream_IO;
 with Ada.Text_IO;
 with Ada.Wide_Wide_Text_IO;
-with Debug;
-with Expand;
-with Generator.Tables;
-with Generator.OOP_Handler;
-with Nodes;
-with League.Application;
+with UAFLEX.Expand;
+with UAFLEX.Generator.Tables;
+with UAFLEX.Generator.OOP_Handler;
+with UAFLEX.Nodes;
 with League.String_Vectors;
 with League.Strings;
 with League.Strings.Internals;
@@ -62,11 +59,16 @@ with League.Text_Codecs;
 with Matreshka.Internals.Finite_Automatons;
 with Matreshka.Internals.Regexps.Compiler;
 
-with UAFLEX_Handler;
-with Aaa.Scanners;
 with String_Sources;
 
-procedure UAFLEX is
+procedure UAFLEX.Run
+  (Handler : League.Strings.Universal_String;
+   Input   : League.Strings.Universal_String;
+   Tokens  : League.Strings.Universal_String;
+   Types   : League.Strings.Universal_String;
+   Scanner : League.Strings.Universal_String;
+   Success : out Boolean)
+is
    procedure Each_Condition (Cursor : Nodes.Start_Condition_Maps.Cursor);
    procedure Each
      (Name : League.Strings.Universal_String;
@@ -76,10 +78,6 @@ procedure UAFLEX is
      (File_Name : String)
      return League.Strings.Universal_String;
 
-   procedure Read_Arguments;
-
-   procedure Print_Usage;
-
    function To_String
      (Item : League.Strings.Universal_String)
      return String
@@ -87,7 +85,7 @@ procedure UAFLEX is
 
    function To_File_Name
      (Item      : League.Strings.Universal_String;
-      Extension : String)
+      Extension : Wide_Wide_String)
      return String;
 
    function "+"
@@ -97,11 +95,6 @@ procedure UAFLEX is
 
    DFA : Matreshka.Internals.Finite_Automatons.DFA_Constructor;
 
-   Handler : League.Strings.Universal_String;
-   Input   : League.Strings.Universal_String;
-   Tokens  : League.Strings.Universal_String;
-   Types   : League.Strings.Universal_String;
-   Scanner : League.Strings.Universal_String;
 
    ----------
    -- Each --
@@ -135,74 +128,15 @@ procedure UAFLEX is
       Nodes.Start_Condition_Maps.Query_Element (Cursor, Each'Access);
    end Each_Condition;
 
-   procedure Print_Usage is
-      use Ada.Wide_Wide_Text_IO;
-   begin
-      Put_Line
-        (Standard_Error,
-         "Usage: uaflex <unit-options> input_file");
-      Put_Line
-        (Standard_Error,
-         "  where <unit-options> contains:");
-      Put_Line
-        (Standard_Error,
-         "    --types Types_Unit - unit for type and condition declarations");
-      Put_Line
-        (Standard_Error,
-         "    --handler Handler_Unit - unit for abstract handler declaration");
-      Put_Line
-        (Standard_Error,
-         "    --scanner Scanner_Unit - unit where scanner is located");
-      Put_Line
-        (Standard_Error,
-         "    --tokens Tokens_Unit - unit where Token type is declared");
-   end Print_Usage;
-
-   --------------------
-   -- Read_Arguments --
-   --------------------
-
-   procedure Read_Arguments is
-      use League.Strings;
-      Is_Types   : constant Universal_String := +"--types";
-      Is_Scanner : constant Universal_String := +"--scanner";
-      Is_Tokens  : constant Universal_String := +"--tokens";
-      Is_Handler : constant Universal_String := +"--handler";
-
-      Last  : constant Natural := League.Application.Arguments.Length;
-      Index : Positive := 1;
-   begin
-      while Index <= Last loop
-         declare
-            Next : constant League.Strings.Universal_String :=
-              League.Application.Arguments.Element (Index);
-         begin
-            if Index = Last then
-               Input := Next;
-            elsif Next = Is_Types then
-               Index := Index + 1;
-               Types := League.Application.Arguments.Element (Index);
-            elsif Next = Is_Scanner then
-               Index := Index + 1;
-               Scanner := League.Application.Arguments.Element (Index);
-            elsif Next = Is_Tokens then
-               Index := Index + 1;
-               Tokens := League.Application.Arguments.Element (Index);
-            elsif Next = Is_Handler then
-               Index := Index + 1;
-               Handler := League.Application.Arguments.Element (Index);
-            end if;
-
-            Index := Index + 1;
-         end;
-      end loop;
-   end Read_Arguments;
+   ---------------
+   -- Read_File --
+   ---------------
 
    function Read_File
      (File_Name : String)
      return League.Strings.Universal_String
    is
-      Decoder : League.Text_Codecs.Text_Codec :=
+      Decoder : constant League.Text_Codecs.Text_Codec :=
         League.Text_Codecs.Codec_For_Application_Locale;
 
       Size : constant Ada.Directories.File_Size :=
@@ -229,31 +163,21 @@ procedure UAFLEX is
 
    function To_File_Name
      (Item      : League.Strings.Universal_String;
-      Extension : String)
+      Extension : Wide_Wide_String)
      return String
    is
-      List : constant League.String_Vectors.Universal_String_Vector :=
-        Item.To_Lowercase.Split ('.');
+      List : League.String_Vectors.Universal_String_Vector;
+      Name : League.Strings.Universal_String;
    begin
-      return To_String (List.Join ("-")) & Extension;
+      List := Item.To_Lowercase.Split ('.');
+      Name := List.Join ("-") & Extension;
+      return Name.To_UTF_8_String;
    end To_File_Name;
 
    Initial  : League.String_Vectors.Universal_String_Vector;
    Source   : aliased String_Sources.String_Source;
    Classes  : Matreshka.Internals.Finite_Automatons.Vectors.Vector;
 begin
-   Read_Arguments;
-
-   if Handler.Is_Empty or
-     Input.Is_Empty or
-     Tokens.Is_Empty or
-     Types.Is_Empty or
-     Scanner.Is_Empty
-   then
-      Print_Usage;
-      return;
-   end if;
-
    Source.Create (Read_File (To_String (Input)));
    Parser.Scanner.Set_Source (Source'Unchecked_Access);
    Parser.Scanner.Set_Handler (Parser.Handler'Unchecked_Access);
@@ -264,14 +188,14 @@ begin
    Parser.YYParse;
 
    if not Nodes.Success then
-      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
+      Success := False;
       return;
    end if;
 
    Expand.RegExps;
 
    if not Nodes.Success then
-      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
+      Success := False;
       return;
    end if;
 
@@ -295,7 +219,7 @@ begin
    end loop;
 
    if not Nodes.Success then
-      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
+      Success := False;
       return;
    end if;
 
@@ -338,4 +262,5 @@ begin
       Scanner,
       Tokens);
 
-end UAFLEX;
+   Success := True;
+end UAFLEX.Run;

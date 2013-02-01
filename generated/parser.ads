@@ -1,7 +1,7 @@
-with Aaa.Scanners;
-with UAFLEX_Handler;
+with UAFLEX.Scanners;
+with UAFLEX.Handler;
 package Parser is
-   Scanner : aliased Aaa.Scanners.Scanner;
-   Handler : aliased UAFLEX_Handler.Handler;
+   Scanner : aliased UAFLEX.Scanners.Scanner;
+   Handler : aliased UAFLEX.Handler.Handler;
    procedure YYParse;
 end Parser;

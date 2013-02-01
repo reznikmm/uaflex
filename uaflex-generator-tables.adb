@@ -39,9 +39,9 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 3692 $ $Date: 2013-02-01 21:53:17 +0200 (Пт., 01 февр. 2013) $
 ------------------------------------------------------------------------------
-with Nodes;
+with UAFLEX.Nodes;
 with Ada.Containers;
 with Ada.Containers.Ordered_Maps;
 with Ada.Strings.Wide_Wide_Fixed;
@@ -52,7 +52,7 @@ with Matreshka.Internals.Unicode.Ucd;
 with Matreshka.Internals.Graphs;
 --  with Debug;
 
-package body Generator.Tables is
+package body UAFLEX.Generator.Tables is
 
    package Char_Set_Vectors renames
      Matreshka.Internals.Finite_Automatons.Vectors;
@@ -138,7 +138,7 @@ package body Generator.Tables is
               (Text & ".");
          end if;
 
-         if Length + Text'Length > 75 then
+         if Length + Text'Length > 74 then
             Ada.Wide_Wide_Text_IO.Put_Line
               (Output, Trim (Text, Ada.Strings.Right));
             Ada.Wide_Wide_Text_IO.Put (Output, Indent * ' ');
@@ -250,6 +250,8 @@ package body Generator.Tables is
       end Print_Classes;
 
       procedure Print_Rules is
+         procedure Each_Rule (Cursor : State_Maps.Cursor);
+
          Count : Natural := 0;
 
          procedure Each_Rule (Cursor : State_Maps.Cursor) is
@@ -454,16 +456,10 @@ package body Generator.Tables is
       use type Ada.Containers.Count_Type;
 
       procedure P (Text : Wide_Wide_String);
-      procedure N (Text : Wide_Wide_String);
       procedure Print_Start (Cursor : Start_Maps.Cursor);
 
       Output  : Ada.Wide_Wide_Text_IO.File_Type;
 
-      procedure N (Text : Wide_Wide_String) is
-      begin
-         --  Ada.Wide_Wide_Text_IO.Put (Text);
-         Ada.Wide_Wide_Text_IO.Put (Output, Text);
-      end N;
 
       procedure P (Text : Wide_Wide_String) is
       begin
@@ -508,4 +504,4 @@ package body Generator.Tables is
       P ("end " & Unit.To_Wide_Wide_String & ";");
    end Types;
 
-end Generator.Tables;
+end UAFLEX.Generator.Tables;

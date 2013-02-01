@@ -39,10 +39,10 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             --
 --                                                                          --
 ------------------------------------------------------------------------------
---  $Revision$ $Date$
+--  $Revision: 2505 $ $Date: 2012-02-22 00:36:44 +0200 (Ср., 22 февр. 2012) $
 ------------------------------------------------------------------------------
 
-package body Generator is
+package body UAFLEX.Generator is
 
    function Image (X : Natural) return Wide_Wide_String is
       Text : constant Wide_Wide_String := Natural'Wide_Wide_Image (X);
@@ -50,4 +50,4 @@ package body Generator is
       return Text (2 .. Text'Last);
    end Image;
 
-end Generator;
+end UAFLEX.Generator;

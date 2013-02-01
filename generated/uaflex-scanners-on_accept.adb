@@ -1,8 +1,8 @@
-separate (AAA.Scanners)
+separate (UAFLEX.Scanners)
 procedure On_Accept
-  (Self    : not null access AAA.Handlers.Handler'Class;
-   Scanner : not null access AAA.Scanners.Scanner'Class;
-   Rule    : AAA.Rule_Index;
+  (Self    : not null access UAFLEX.Handlers.Handler'Class;
+   Scanner : not null access UAFLEX.Scanners.Scanner'Class;
+   Rule    : UAFLEX.Lexer_Types.Rule_Index;
    Token   : out Parser_Tokens.Token;
    Skip    : in out Boolean) is
 begin
