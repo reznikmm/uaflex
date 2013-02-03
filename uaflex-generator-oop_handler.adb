@@ -112,6 +112,11 @@ package body UAFLEX.Generator.OOP_Handler is
                First := False;
             else
                N (" | " & Image (R));
+
+               if R mod 10 = 0 then
+                  P ("");
+                  N ("        ");
+               end if;
             end if;
          end loop;
 

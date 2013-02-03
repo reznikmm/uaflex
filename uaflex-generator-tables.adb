@@ -179,7 +179,7 @@ package body UAFLEX.Generator.Tables is
                First (F) := Natural (Known.Length);
                Known.Insert (Second, First (F));
 
-               P ("   Second_" & Image (First (F)) &
+               P ("   S_" & Image (First (F)) &
                     " : aliased constant Second_Stage_Array :=");
 
                for J in Second_Stage_Index'Range loop
@@ -216,7 +216,7 @@ package body UAFLEX.Generator.Tables is
                N (" ");
             end if;
 
-            N ("Second_" & Image (First (F)) & "'Access");
+            N ("S_" & Image (First (F)) & "'Access");
 
             if F = First_Stage_Index'Last then
                P (");");

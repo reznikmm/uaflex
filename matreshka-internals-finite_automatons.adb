@@ -114,7 +114,7 @@ package body Matreshka.Internals.Finite_Automatons is
                raise Constraint_Error with "'None' unsupported";
 
             when Matreshka.Internals.Regexps.N_Subexpression =>
-               Walk (Compiler.Get_Expression (AST, Root));
+               Walk_List (Compiler.Get_Expression (AST, Root));
 
             when Matreshka.Internals.Regexps.N_Match_Any |
               Matreshka.Internals.Regexps.N_Match_Code |
@@ -140,6 +140,8 @@ package body Matreshka.Internals.Finite_Automatons is
                   raise Constraint_Error with
                     "'Upper not *' unsupported";
                end if;
+
+               Walk_List (Compiler.Get_Expression (AST, Root));
 
             when Matreshka.Internals.Regexps.N_Alternation =>
                Walk_List (Compiler.Get_Preferred (AST, Root));
@@ -467,7 +469,7 @@ package body Matreshka.Internals.Finite_Automatons is
                raise Constraint_Error;
 
             when Matreshka.Internals.Regexps.N_Subexpression =>
-               Walk
+               Walk_List
                  (AST, Compiler.Get_Expression (AST, Root), Pos, First, Last);
 
             when Matreshka.Internals.Regexps.N_Match_Any |
@@ -492,11 +494,12 @@ package body Matreshka.Internals.Finite_Automatons is
                   Result_First : Position_Set := Empty;
                   Result_Last  : Position_Set := Empty;
                begin
-                  Walk (AST,
-                        Compiler.Get_Expression (AST, Root),
-                        Pos,
-                        Result_First,
-                        Result_Last);
+                  Walk_List
+                    (AST,
+                     Compiler.Get_Expression (AST, Root),
+                     Pos,
+                     Result_First,
+                     Result_Last);
 
                   Add_To_Follow (Result_First, Result_Last);
                   First := First or Result_First;
@@ -634,7 +637,8 @@ package body Matreshka.Internals.Finite_Automatons is
             raise Constraint_Error;
 
          when Matreshka.Internals.Regexps.N_Subexpression =>
-            return Count_Positions (AST, Compiler.Get_Expression (AST, Root));
+            return Count_Positions_In_List
+              (AST, Compiler.Get_Expression (AST, Root));
 
          when Matreshka.Internals.Regexps.N_Match_Any |
           Matreshka.Internals.Regexps.N_Match_Code |
@@ -648,7 +652,8 @@ package body Matreshka.Internals.Finite_Automatons is
          when Matreshka.Internals.Regexps.N_Member_Range =>
             raise Constraint_Error;
          when Matreshka.Internals.Regexps.N_Multiplicity =>
-            return Count_Positions (AST, Compiler.Get_Expression (AST, Root));
+            return Count_Positions_In_List
+              (AST, Compiler.Get_Expression (AST, Root));
 
          when Matreshka.Internals.Regexps.N_Alternation =>
             return
@@ -928,7 +933,7 @@ package body Matreshka.Internals.Finite_Automatons is
             raise Constraint_Error;
 
          when Matreshka.Internals.Regexps.N_Subexpression =>
-            return Nullable (AST, Compiler.Get_Expression (AST, Root));
+            return Nullable_List (AST, Compiler.Get_Expression (AST, Root));
 
          when Matreshka.Internals.Regexps.N_Match_Any |
            Matreshka.Internals.Regexps.N_Match_Code |
@@ -946,7 +951,7 @@ package body Matreshka.Internals.Finite_Automatons is
 
          when Matreshka.Internals.Regexps.N_Multiplicity =>
             return Node.Lower = 0 or else
-              Nullable (AST, Compiler.Get_Expression (AST, Root));
+              Nullable_List (AST, Compiler.Get_Expression (AST, Root));
 
          when Matreshka.Internals.Regexps.N_Alternation =>
             return Nullable_List (AST, Compiler.Get_Preferred (AST, Root))
