@@ -371,18 +371,6 @@ package body UAFLEX.Generator.Tables is
       Print_Char_Classes;
       Print_Switch;
       Print_Rules;
-      P ("   function To_Class (Value : " &
-           "Matreshka.Internals.Unicode.Code_Point)");
-      P ("     return Character_Class");
-      P ("   is");
-      P ("      function Element is new " &
-           "Matreshka.Internals.Unicode.Ucd.Generic_Element");
-      P ("        (Character_Class, Second_Stage_Array,");
-      P ("         Second_Stage_Array_Access, First_Stage_Array);");
-      P ("   begin");
-      P ("      return Element (First, Value);");
-      P ("   end To_Class;");
-      P ("");
       P ("   function Rule (S : State) return " & Types.To_Wide_Wide_String &
            ".Rule_Index is");
       P ("   begin");
@@ -394,6 +382,18 @@ package body UAFLEX.Generator.Tables is
       P ("   begin");
       P ("      return Switch_Table (S, Class);");
       P ("   end Switch;");
+      P ("");
+      P ("   function To_Class (Value : " &
+           "Matreshka.Internals.Unicode.Code_Point)");
+      P ("     return Character_Class");
+      P ("   is");
+      P ("      function Element is new " &
+           "Matreshka.Internals.Unicode.Ucd.Generic_Element");
+      P ("        (Character_Class, Second_Stage_Array,");
+      P ("         Second_Stage_Array_Access, First_Stage_Array);");
+      P ("   begin");
+      P ("      return Element (First, Value);");
+      P ("   end To_Class;");
       P ("");
       P ("end " & Unit.To_Wide_Wide_String & ";");
    end Go;
