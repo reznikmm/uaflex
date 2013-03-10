@@ -483,8 +483,8 @@ package body UAFLEX.Generator.Tables is
 
       P ("package " & Unit.To_Wide_Wide_String & " is");
       P ("");
-      P ("   type State is mod" &
-           State'Wide_Wide_Image (DFA.Graph.Node_Count + 1) &
+      P ("   type State is mod +" &
+           Image (Positive (DFA.Graph.Node_Count + 1)) &
            ";");
 
       P ("   subtype Valid_State is State range 0 .. State'Last - 1;");
@@ -492,8 +492,8 @@ package body UAFLEX.Generator.Tables is
       DFA.Start.Iterate (Print_Start'Access);
 
       P ("");
-      P ("   type Character_Class is mod" &
-           Ada.Containers.Count_Type'Wide_Wide_Image (Classes.Length + 1) &
+      P ("   type Character_Class is mod +" &
+           Image (Positive (Classes.Length + 1)) &
            ";");
 
       P ("");
