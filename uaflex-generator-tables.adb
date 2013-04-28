@@ -482,6 +482,7 @@ package body UAFLEX.Generator.Tables is
       --  Debug.Print_Character_Classes (Classes);
 
       P ("package " & Unit.To_Wide_Wide_String & " is");
+      P ("   pragma Preelaborate;");
       P ("");
       P ("   type State is mod +" &
            Image (Positive (DFA.Graph.Node_Count + 1)) &

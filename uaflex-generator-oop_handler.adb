@@ -36,6 +36,7 @@ package body UAFLEX.Generator.OOP_Handler is
 
       P ("");
       P ("package " & Unit.To_Wide_Wide_String & " is");
+      P ("   pragma Preelaborate;");
       P ("");
       P ("   type Handler is abstract tagged limited null record;");
       P ("");
