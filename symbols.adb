@@ -374,11 +374,11 @@ package body Symbols is
    -- To_Range --
    --------------
 
-   function To_Range (Some : Symbol_Array) return Symbol_Set is
+   function To_Range (Sequence : Symbol_Array) return Symbol_Set is
       Result : Symbol_Set;
    begin
-      for I in Some'Range loop
-         Result := Result or To_Range (Some (I));
+      for I in Sequence'Range loop
+         Result := Result or To_Range (Sequence (I));
       end loop;
 
       return Result;

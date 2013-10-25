@@ -9,7 +9,7 @@ package Symbols is
    type Symbol_Set is private;
 
    function To_Range  (Single       : Symbol)       return Symbol_Set;
-   function To_Range  (Some         : Symbol_Array) return Symbol_Set;
+   function To_Range  (Sequence     : Symbol_Array) return Symbol_Set;
    function To_Range  (Lower, Upper : Symbol)       return Symbol_Set;
    function "or"      (Left, Right  : Symbol_Set)   return Symbol_Set;
    function "and"     (Left, Right  : Symbol_Set)   return Symbol_Set;
