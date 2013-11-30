@@ -5,7 +5,7 @@
 --                     - - - - - - - - - - - - - - -                        --
 --            Read copyright and license at the end of this file            --
 ------------------------------------------------------------------------------
---  $Revision: $ $Date: $
+--  $Revision$ $Date$
 
 
 with Ada.Command_Line;            use Ada.Command_Line;

@@ -5,7 +5,7 @@
 --                     - - - - - - - - - - - - - - -                        --
 --            Read copyright and license at the end of this file            --
 ------------------------------------------------------------------------------
---  $Revision: $ $Date: $
+--  $Revision$ $Date$
 
 
 --  Run this to generate symbols-unicode.adb file.

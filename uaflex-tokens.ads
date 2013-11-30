@@ -5,7 +5,7 @@
 --                     - - - - - - - - - - - - - - -                        --
 --            Read copyright and license at the end of this file            --
 ------------------------------------------------------------------------------
---  $Revision: $ $Date: $
+--  $Revision$ $Date$
 
 
 package UAFlex.Tokens is
