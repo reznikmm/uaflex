@@ -3,7 +3,7 @@ procedure On_Accept
   (Self    : not null access UAFLEX.Handlers.Handler'Class;
    Scanner : not null access UAFLEX.Scanners.Scanner'Class;
    Rule    : UAFLEX.Lexer_Types.Rule_Index;
-   Token   : out Parser_Tokens.Token;
+   Token   : out Parser_Tokens.Token_Kind;
    Skip    : in out Boolean) is
 begin
    case Rule is

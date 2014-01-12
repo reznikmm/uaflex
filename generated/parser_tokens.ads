@@ -10,6 +10,8 @@ package Parser_Tokens is
          Start, Excl_Start, Section_End,
          Regexp, Action );
 
+    subtype Token_Kind is Token;
+
     Syntax_Error : exception;
 
 end Parser_Tokens;

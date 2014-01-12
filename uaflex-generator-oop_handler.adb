@@ -47,7 +47,8 @@ package body UAFLEX.Generator.OOP_Handler is
          P ("      Scanner : not null access " &
               Scanner.To_Wide_Wide_String & ".Scanner'Class;");
          P ("      Rule    : " & Types.To_Wide_Wide_String & ".Rule_Index;");
-         P ("      Token   : out " & Tokens.To_Wide_Wide_String & ".Token;");
+         P ("      Token   : out " & Tokens.To_Wide_Wide_String &
+             ".Token_Kind;");
          P ("      Skip    : in out Boolean) is abstract;");
          P ("");
       end loop;
@@ -97,7 +98,7 @@ package body UAFLEX.Generator.OOP_Handler is
       P ("   Scanner : not null access " &
            Scanner.To_Wide_Wide_String & ".Scanner'Class;");
       P ("   Rule    : " & Types.To_Wide_Wide_String & ".Rule_Index;");
-      P ("   Token   : out " & Tokens.To_Wide_Wide_String & ".Token;");
+      P ("   Token   : out " & Tokens.To_Wide_Wide_String & ".Token_Kind;");
       P ("   Skip    : in out Boolean) is");
       P ("begin");
       P ("   case Rule is");
