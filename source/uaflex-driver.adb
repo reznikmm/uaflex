@@ -56,9 +56,8 @@ procedure UAFLEX.Driver is
    procedure Print_Usage;
 
    function "+"
-     (Item : Wide_Wide_String)
-     return League.Strings.Universal_String
-       renames League.Strings.To_Universal_String;
+     (Item : Wide_Wide_String) return League.Strings.Universal_String
+   renames League.Strings.To_Universal_String;
 
    Handler : League.Strings.Universal_String;
    Input   : League.Strings.Universal_String;
@@ -73,12 +72,8 @@ procedure UAFLEX.Driver is
    procedure Print_Usage is
       use Ada.Wide_Wide_Text_IO;
    begin
-      Put_Line
-        (Standard_Error,
-         "Usage: uaflex <unit-options> input_file");
-      Put_Line
-        (Standard_Error,
-         "  where <unit-options> contains:");
+      Put_Line (Standard_Error, "Usage: uaflex <unit-options> input_file");
+      Put_Line (Standard_Error, "  where <unit-options> contains:");
       Put_Line
         (Standard_Error,
          "    --types Types_Unit - unit for type and condition declarations");
@@ -137,23 +132,17 @@ procedure UAFLEX.Driver is
 begin
    Read_Arguments;
 
-   if Handler.Is_Empty or
-     Input.Is_Empty or
-     Tokens.Is_Empty or
-     Types.Is_Empty or
-     Scanner.Is_Empty
+   if Handler.Is_Empty
+     or Input.Is_Empty
+     or Tokens.Is_Empty
+     or Types.Is_Empty
+     or Scanner.Is_Empty
    then
       Print_Usage;
       return;
    end if;
 
-   UAFLEX.Run
-     (Handler,
-      Input,
-      Tokens,
-      Types,
-      Scanner,
-      Success);
+   UAFLEX.Run (Handler, Input, Tokens, Types, Scanner, Success);
 
    if not Success then
       Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);

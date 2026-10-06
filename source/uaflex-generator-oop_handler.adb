@@ -61,7 +61,7 @@ package body UAFLEX.Generator.OOP_Handler is
    is
       procedure P (Text : Wide_Wide_String);
 
-      Output  : Ada.Wide_Wide_Text_IO.File_Type;
+      Output : Ada.Wide_Wide_Text_IO.File_Type;
 
       procedure P (Text : Wide_Wide_String) is
       begin
@@ -88,11 +88,15 @@ package body UAFLEX.Generator.OOP_Handler is
       for J in 1 .. Actions.Length loop
          P ("   procedure " & Actions.Element (J).To_Wide_Wide_String);
          P ("     (Self    : not null access Handler;");
-         P ("      Scanner : not null access " &
-              Scanner.To_Wide_Wide_String & ".Scanner'Class;");
+         P
+           ("      Scanner : not null access "
+            & Scanner.To_Wide_Wide_String
+            & ".Scanner'Class;");
          P ("      Rule    : " & Types.To_Wide_Wide_String & ".Rule_Index;");
-         P ("      Token   : out " & Tokens.To_Wide_Wide_String &
-             ".Token_Kind;");
+         P
+           ("      Token   : out "
+            & Tokens.To_Wide_Wide_String
+            & ".Token_Kind;");
          P ("      Skip    : in out Boolean) is abstract;");
          P ("");
       end loop;
@@ -119,8 +123,8 @@ package body UAFLEX.Generator.OOP_Handler is
       procedure P (Text : Wide_Wide_String);
       procedure N (Text : Wide_Wide_String);
 
-      Output  : Ada.Wide_Wide_Text_IO.File_Type;
-      First   : Boolean;
+      Output : Ada.Wide_Wide_Text_IO.File_Type;
+      First  : Boolean;
 
       procedure N (Text : Wide_Wide_String) is
       begin
@@ -137,10 +141,14 @@ package body UAFLEX.Generator.OOP_Handler is
 
       P ("separate (" & Scanner.To_Wide_Wide_String & ")");
       P ("procedure On_Accept");
-      P ("  (Self    : not null access " &
-           Handler.To_Wide_Wide_String & ".Handler'Class;");
-      P ("   Scanner : not null access " &
-           Scanner.To_Wide_Wide_String & ".Scanner'Class;");
+      P
+        ("  (Self    : not null access "
+         & Handler.To_Wide_Wide_String
+         & ".Handler'Class;");
+      P
+        ("   Scanner : not null access "
+         & Scanner.To_Wide_Wide_String
+         & ".Scanner'Class;");
       P ("   Rule    : " & Types.To_Wide_Wide_String & ".Rule_Index;");
       P ("   Token   : out " & Tokens.To_Wide_Wide_String & ".Token_Kind;");
       P ("   Skip    : in out Boolean) is");
@@ -167,8 +175,10 @@ package body UAFLEX.Generator.OOP_Handler is
          end loop;
 
          P (" =>");
-         P ("         Self." & Actions.Element (J).To_Wide_Wide_String &
-              " (Scanner, Rule, Token, Skip);");
+         P
+           ("         Self."
+            & Actions.Element (J).To_Wide_Wide_String
+            & " (Scanner, Rule, Token, Skip);");
          P ("");
       end loop;
 

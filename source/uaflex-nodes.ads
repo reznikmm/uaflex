@@ -55,12 +55,15 @@ package UAFLEX.Nodes is
       case Kind is
          when Text =>
             Value : League.Strings.Universal_String;
+
          when Rule =>
             Regexp : League.Strings.Universal_String;
             Action : League.Strings.Universal_String;
+
          when Macro =>
             Name : League.Strings.Universal_String;
             Text : League.Strings.Universal_String;
+
          when Name_List =>
             List : League.String_Vectors.Universal_String_Vector;
       end case;
@@ -76,25 +79,26 @@ package UAFLEX.Nodes is
 
    use type League.Strings.Universal_String;
 
-   package Macro_Maps is new Ada.Containers.Ordered_Maps
-     (League.Strings.Universal_String,   --  Macro name
-      League.Strings.Universal_String);  --  Macro value
+   package Macro_Maps is new
+     Ada.Containers.Ordered_Maps
+       (League.Strings.Universal_String,   --  Macro name
+        League.Strings.Universal_String);  --  Macro value
 
-   package Positive_Vectors is new Ada.Containers.Vectors
-     (Index_Type   => Positive,
-      Element_Type => Positive);
+   package Positive_Vectors is new
+     Ada.Containers.Vectors (Index_Type => Positive, Element_Type => Positive);
 
    type Start_Condition is record
       Exclusive : Boolean;
       Rules     : Positive_Vectors.Vector;
    end record;
 
-   package Start_Condition_Maps is new Ada.Containers.Ordered_Maps
-     (League.Strings.Universal_String,   --  Condition name
-      Start_Condition);
+   package Start_Condition_Maps is new
+     Ada.Containers.Ordered_Maps
+       (League.Strings.Universal_String,   --  Condition name
+        Start_Condition);
 
-   type Shared_Pattern_Array_Access is access all
-     Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array;
+   type Shared_Pattern_Array_Access is
+     access all Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array;
 
    --  List of regexp from input file
    Rules      : League.String_Vectors.Universal_String_Vector;

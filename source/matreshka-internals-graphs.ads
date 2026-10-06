@@ -61,12 +61,12 @@ package Matreshka.Internals.Graphs is
    type Edge_Array_Access is access Edge_Array;
 
    function Node_Count (Self : Graph) return Node_List_Length;
-   function Get_Nodes  (Self : Graph) return Node_Array;
+   function Get_Nodes (Self : Graph) return Node_Array;
    function Edge_Count (Self : Graph) return Edge_List_Length;
-   function Get_Edges  (Self : Graph) return Edge_Array;
+   function Get_Edges (Self : Graph) return Edge_Array;
 
    function Edge_Count (Self : Node) return Edge_List_Length;
-   function Outgoing_Edges  (Self : Node) return Edge_Array;
+   function Outgoing_Edges (Self : Node) return Edge_Array;
 
    function Source_Node (Self : Edge'Class) return Node;
    function Target_Node (Self : Edge'Class) return Node;
@@ -76,10 +76,10 @@ package Matreshka.Internals.Graphs is
 
    function Get_Node (Self : Graph'Class; Index : Node_Index) return Node;
    function Get_Edge (Self : Graph'Class; Index : Edge_Index) return Edge;
-   function Get_Edge (Self : Node'Class;  Index : Edge_Index) return Edge;
+   function Get_Edge (Self : Node'Class; Index : Edge_Index) return Edge;
 
    function First_Edge_Index (Self : Node) return Edge_Index;
-   function Last_Edge_Index  (Self : Node) return Edge_List_Length;
+   function Last_Edge_Index (Self : Node) return Edge_List_Length;
 
    type Edge_Identifier is new Positive;
 
@@ -101,8 +101,7 @@ package Matreshka.Internals.Graphs is
       function New_Edge (From, To : Node) return Edge_Identifier;
 
       procedure Complete
-        (Input  : in out Graph'Class;
-         Output : out Graphs.Graph);
+        (Input : in out Graph'Class; Output : out Graphs.Graph);
       --  Convert Input to Output and clear Input
 
       procedure Clear (Self : in out Graph);
@@ -137,10 +136,10 @@ private
    end record;
 
    type Node is tagged record
-      Graph  : Graph_Access;
-      Index  : Node_Index;
-      First  : Edge_Index;
-      Last   : Edge_List_Length;
+      Graph : Graph_Access;
+      Index : Node_Index;
+      First : Edge_Index;
+      Last  : Edge_List_Length;
    end record;
 
    type Graph is tagged limited record

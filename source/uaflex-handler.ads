@@ -55,7 +55,8 @@ package UAFLEX.Handler is
       Scanner : not null access UAFLEX.Scanners.Scanner'Class;
       Rule    : Lexer_Types.Rule_Index;
       Token   : out Parser_Tokens.Token;
-      Skip    : in out Boolean) is null;
+      Skip    : in out Boolean)
+   is null;
 
    procedure Skip_Line
      (Self    : not null access Handler;

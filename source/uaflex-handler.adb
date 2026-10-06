@@ -112,7 +112,8 @@ package body UAFLEX.Handler is
 
    procedure New_Line
      (Self    : not null access Handler'Class;
-      Scanner : not null access UAFLEX.Scanners.Scanner'Class) is
+      Scanner : not null access UAFLEX.Scanners.Scanner'Class)
+   is
       pragma Unreferenced (Scanner);
    begin
       Self.Line_Feed := True;

@@ -75,8 +75,8 @@ package body UAFLEX.Generator.Tables is
 
    type Second_Stage_Array is array (Second_Stage_Index) of Character_Class;
 
-   package Second_Stage_Array_Maps is new Ada.Containers.Ordered_Maps
-     (Second_Stage_Array, Natural);
+   package Second_Stage_Array_Maps is new
+     Ada.Containers.Ordered_Maps (Second_Stage_Array, Natural);
 
    --------
    -- Go --
@@ -104,9 +104,9 @@ package body UAFLEX.Generator.Tables is
          Count : in out Natural);
       function Get_Second (X : First_Stage_Index) return Second_Stage_Array;
 
-      Output  : Ada.Wide_Wide_Text_IO.File_Type;
-      Length  : Natural := 0;  --  Length of last output line
-      Indent  : Natural := 0;  --  Last indent
+      Output : Ada.Wide_Wide_Text_IO.File_Type;
+      Length : Natural := 0;  --  Length of last output line
+      Indent : Natural := 0;  --  Last indent
 
       ----------------
       -- Get_Second --
@@ -134,8 +134,7 @@ package body UAFLEX.Generator.Tables is
          use Ada.Strings.Wide_Wide_Fixed;
       begin
          if Length = 0 then
-            Indent := Ada.Strings.Wide_Wide_Fixed.Index_Non_Blank
-              (Text & ".");
+            Indent := Ada.Strings.Wide_Wide_Fixed.Index_Non_Blank (Text & ".");
          end if;
 
          if Length + Text'Length > 74 then
@@ -179,8 +178,10 @@ package body UAFLEX.Generator.Tables is
                First (F) := Natural (Known.Length);
                Known.Insert (Second, First (F));
 
-               P ("   S_" & Image (First (F)) &
-                    " : aliased constant Second_Stage_Array :=");
+               P
+                 ("   S_"
+                  & Image (First (F))
+                  & " : aliased constant Second_Stage_Array :=");
 
                for J in Second_Stage_Index'Range loop
                   if J = 0 then
@@ -231,7 +232,7 @@ package body UAFLEX.Generator.Tables is
         (Id    : Matreshka.Internals.Graphs.Edge_Identifier;
          Count : in out Natural)
       is
-         Set : constant League.Character_Sets.Universal_Character_Set :=
+         Set   : constant League.Character_Sets.Universal_Character_Set :=
            DFA.Edge_Char_Set.Element (Id);
          First : Boolean := True;
       begin
@@ -265,16 +266,20 @@ package body UAFLEX.Generator.Tables is
                N (", ");
             end if;
 
-            N (Image (Natural (Dead_End_Map (State_Maps.Key (Cursor))) - 1) &
-                 " => " & Image (State_Maps.Element (Cursor)));
+            N
+              (Image (Natural (Dead_End_Map (State_Maps.Key (Cursor))) - 1)
+               & " => "
+               & Image (State_Maps.Element (Cursor)));
 
             Count := Count + 1;
          end Each_Rule;
       begin
-         P ("   Rule_Table : constant array (State range " &
-              Image (Positive (First_Final) - 1) & " .. " &
-              Image (Positive (DFA.Graph.Node_Count) - 1) &
-              ") of Rule_Index :=");
+         P
+           ("   Rule_Table : constant array (State range "
+            & Image (Positive (First_Final) - 1)
+            & " .. "
+            & Image (Positive (DFA.Graph.Node_Count) - 1)
+            & ") of Rule_Index :=");
          DFA.Final.Iterate (Each_Rule'Access);
          P (");");
          P ("");
@@ -283,25 +288,28 @@ package body UAFLEX.Generator.Tables is
       procedure Print_Switch is
          First : Boolean := True;
       begin
-         P ("   Switch_Table : constant array " &
-              "(State range 0 .. " &
-              Image (Positive (First_Dead_End) - 2) & ",");
+         P
+           ("   Switch_Table : constant array "
+            & "(State range 0 .. "
+            & Image (Positive (First_Dead_End) - 2)
+            & ",");
 
-         P ("                                  Character_Class range 0 .. " &
-              Image (Positive (Classes.Length)) &
-              ") of State :=");
+         P
+           ("                                  Character_Class range 0 .. "
+            & Image (Positive (Classes.Length))
+            & ") of State :=");
 
          for J in 1 .. DFA.Graph.Node_Count loop
             declare
                use type Matreshka.Internals.Graphs.Edge_Index;
 
                Count : Natural := 0;
-               Edge : Matreshka.Internals.Graphs.Edge;
-               Item : constant Matreshka.Internals.Graphs.Node :=
+               Edge  : Matreshka.Internals.Graphs.Edge;
+               Item  : constant Matreshka.Internals.Graphs.Node :=
                  DFA.Graph.Get_Node (J);
-               F : constant Matreshka.Internals.Graphs.Edge_Index :=
+               F     : constant Matreshka.Internals.Graphs.Edge_Index :=
                  Item.First_Edge_Index;
-               L : constant Matreshka.Internals.Graphs.Edge_List_Length :=
+               L     : constant Matreshka.Internals.Graphs.Edge_List_Length :=
                  Item.Last_Edge_Index;
             begin
                if Dead_End_Map (J) < First_Dead_End then
@@ -327,8 +335,9 @@ package body UAFLEX.Generator.Tables is
                      Print_Classes (Edge.Edge_Id, Count);
 
                      N (" =>");
-                     N (State'Wide_Wide_Image
-                        (Dead_End_Map (Edge.Target_Node.Index) - 1));
+                     N
+                       (State'Wide_Wide_Image
+                          (Dead_End_Map (Edge.Target_Node.Index) - 1));
 
                      if K /= L then
                         N (",");
@@ -345,8 +354,9 @@ package body UAFLEX.Generator.Tables is
                         N (", ");
                      end if;
 
-                     N ("others =>" &
-                          State'Wide_Wide_Image (DFA.Graph.Node_Count));
+                     N
+                       ("others =>"
+                        & State'Wide_Wide_Image (DFA.Graph.Node_Count));
                   end if;
 
                   N (")");
@@ -371,8 +381,9 @@ package body UAFLEX.Generator.Tables is
       P ("   subtype Second_Stage_Index is");
       P ("     Matreshka.Internals.Unicode.Ucd.Second_Stage_Index;");
       P ("");
-      P ("   type Second_Stage_Array is array (Second_Stage_Index) " &
-           "of Character_Class;");
+      P
+        ("   type Second_Stage_Array is array (Second_Stage_Index) "
+         & "of Character_Class;");
       P ("");
       P ("   type Second_Stage_Array_Access is");
       P ("     not null access constant Second_Stage_Array;");
@@ -388,18 +399,21 @@ package body UAFLEX.Generator.Tables is
       P ("      return Rule_Table (S);");
       P ("   end Rule;");
       P ("");
-      P ("   function Switch (S : State; Class : Character_Class) " &
-           "return State is");
+      P
+        ("   function Switch (S : State; Class : Character_Class) "
+         & "return State is");
       P ("   begin");
       P ("      return Switch_Table (S, Class);");
       P ("   end Switch;");
       P ("");
-      P ("   function To_Class (Value : " &
-           "Matreshka.Internals.Unicode.Code_Point)");
+      P
+        ("   function To_Class (Value : "
+         & "Matreshka.Internals.Unicode.Code_Point)");
       P ("     return Character_Class");
       P ("   is");
-      P ("      function Element is new " &
-           "Matreshka.Internals.Unicode.Ucd.Generic_Element");
+      P
+        ("      function Element is new "
+         & "Matreshka.Internals.Unicode.Ucd.Generic_Element");
       P ("        (Character_Class, Second_Stage_Array,");
       P ("         Second_Stage_Array_Access, First_Stage_Array);");
       P ("   begin");
@@ -437,8 +451,8 @@ package body UAFLEX.Generator.Tables is
       end loop;
 
       Dead_End_Index := First_Dead_End;
-      Final_Index    := First_Final;
-      Free_Index     := 1;
+      Final_Index := First_Final;
+      Free_Index := 1;
 
       for J in Dead_End_Map'Range loop
          if not DFA.Final.Contains (J) then
@@ -459,8 +473,7 @@ package body UAFLEX.Generator.Tables is
    -----------------------
 
    procedure Split_To_Distinct
-     (List   : Char_Set_Vectors.Vector;
-      Result : out Char_Set_Vectors.Vector) is
+     (List : Char_Set_Vectors.Vector; Result : out Char_Set_Vectors.Vector) is
    begin
       for J in List.First_Index .. List.Last_Index loop
          declare
@@ -469,7 +482,7 @@ package body UAFLEX.Generator.Tables is
          begin
             for K in Result.First_Index .. Result.Last_Index loop
                declare
-                  Item : constant Universal_Character_Set :=
+                  Item         : constant Universal_Character_Set :=
                     Result.Element (K);
                   Intersection : constant Universal_Character_Set :=
                     Item and Rest;
@@ -517,7 +530,7 @@ package body UAFLEX.Generator.Tables is
       procedure P (Text : Wide_Wide_String);
       procedure Print_Start (Cursor : Start_Maps.Cursor);
 
-      Output  : Ada.Wide_Wide_Text_IO.File_Type;
+      Output : Ada.Wide_Wide_Text_IO.File_Type;
 
       procedure P (Text : Wide_Wide_String) is
       begin
@@ -527,11 +540,13 @@ package body UAFLEX.Generator.Tables is
 
       procedure Print_Start (Cursor : Start_Maps.Cursor) is
       begin
-         P ("   " & Start_Maps.Key (Cursor).To_Wide_Wide_String &
-              " : constant State :=" &
-              State'Wide_Wide_Image
-              (Dead_End_Map (Start_Maps.Element (Cursor)) - 1) &
-              ";");
+         P
+           ("   "
+            & Start_Maps.Key (Cursor).To_Wide_Wide_String
+            & " : constant State :="
+            & State'Wide_Wide_Image
+                (Dead_End_Map (Start_Maps.Element (Cursor)) - 1)
+            & ";");
       end Print_Start;
 
    begin
@@ -542,29 +557,35 @@ package body UAFLEX.Generator.Tables is
       P ("package " & Unit.To_Wide_Wide_String & " is");
       P ("   pragma Preelaborate;");
       P ("");
-      P ("   type State is mod +" &
-           Image (Positive (DFA.Graph.Node_Count + 1)) &
-           ";");
+      P
+        ("   type State is mod +"
+         & Image (Positive (DFA.Graph.Node_Count + 1))
+         & ";");
 
-      P ("   subtype Looping_State is State range 0 .. " &
-           Image (Positive (First_Dead_End) - 2) & ";");
-      P ("   subtype Final_State is State range " &
-           Image (Positive (First_Final) - 1) &
-           " .. State'Last - 1;");
+      P
+        ("   subtype Looping_State is State range 0 .. "
+         & Image (Positive (First_Dead_End) - 2)
+         & ";");
+      P
+        ("   subtype Final_State is State range "
+         & Image (Positive (First_Final) - 1)
+         & " .. State'Last - 1;");
       P ("");
       P ("   Error_State : constant State := State'Last;");
       P ("");
       DFA.Start.Iterate (Print_Start'Access);
 
       P ("");
-      P ("   type Character_Class is mod +" &
-           Image (Positive (Classes.Length + 1)) &
-           ";");
+      P
+        ("   type Character_Class is mod +"
+         & Image (Positive (Classes.Length + 1))
+         & ";");
 
       P ("");
-      P ("   type Rule_Index is range 0 .." &
-           Natural'Wide_Wide_Image (Nodes.Rules.Length) &
-           ";");
+      P
+        ("   type Rule_Index is range 0 .."
+         & Natural'Wide_Wide_Image (Nodes.Rules.Length)
+         & ";");
       P ("");
       P ("end " & Unit.To_Wide_Wide_String & ";");
    end Types;

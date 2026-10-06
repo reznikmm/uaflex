@@ -47,11 +47,11 @@ with Ada.Unchecked_Deallocation;
 
 package body Matreshka.Internals.Graphs is
 
-   procedure Free is new Ada.Unchecked_Deallocation
-     (Edge_Array, Edge_Array_Access);
+   procedure Free is new
+     Ada.Unchecked_Deallocation (Edge_Array, Edge_Array_Access);
 
-   procedure Free is new Ada.Unchecked_Deallocation
-     (Node_Array, Node_Array_Access);
+   procedure Free is new
+     Ada.Unchecked_Deallocation (Node_Array, Node_Array_Access);
 
    -----------
    -- Clear --
@@ -97,10 +97,10 @@ package body Matreshka.Internals.Graphs is
 
          procedure Resize is
          begin
-            if Self.Nodes = null or else
-              Self.Nodes'Length < Self.Last_Node + 1
+            if Self.Nodes = null or else Self.Nodes'Length < Self.Last_Node + 1
             then
-               declare  --  6 15 28 48 78 123 190
+               declare
+                  --  6 15 28 48 78 123 190
                   Old        : Node_Array_Access := Self.Nodes;
                   New_Length : constant Node_Index :=
                     (Self.Last_Node + 4) * 3 / 2;
@@ -120,10 +120,7 @@ package body Matreshka.Internals.Graphs is
          Resize;
 
          Self.Nodes (Self.Last_Node) :=
-           (Graph => <>,
-            Index => Self.Last_Node,
-            First => 1,
-            Last  => 0);
+           (Graph => <>, Index => Self.Last_Node, First => 1, Last => 0);
 
          return (Self.Self, Self.Last_Node);
       end New_Node;
@@ -150,13 +147,11 @@ package body Matreshka.Internals.Graphs is
 
          procedure Resize is
          begin
-            if Self.Edges = null or else
-              Self.Edges'Length < Self.Last_Edge + 1
+            if Self.Edges = null or else Self.Edges'Length < Self.Last_Edge + 1
             then
                declare
                   Old        : Edge_Array_Access := Self.Edges;
-                  New_Length : constant Edge_Index :=
-                    (Self.Last_Edge + 2) * 2;
+                  New_Length : constant Edge_Index := (Self.Last_Edge + 2) * 2;
                begin
                   Self.Edges := new Edge_Array (1 .. New_Length);
 
@@ -188,19 +183,23 @@ package body Matreshka.Internals.Graphs is
       end New_Edge;
 
       procedure Complete
-        (Input  : in out Graph'Class;
-         Output : out Graphs.Graph)
+        (Input : in out Graph'Class; Output : out Graphs.Graph)
       is
          function Less (Left, Right : Edge) return Boolean;
 
          function Less (Left, Right : Edge) return Boolean is
          begin
-            return Left.Source < Right.Source or
-              (Left.Source = Right.Source and Left.Index < Right.Index);
+            return
+              Left.Source < Right.Source
+              or (Left.Source = Right.Source and Left.Index < Right.Index);
          end Less;
 
-         procedure Sort is new Ada.Containers.Generic_Array_Sort
-           (Edge_Index, Edge, Edge_Array, Less);
+         procedure Sort is new
+           Ada.Containers.Generic_Array_Sort
+             (Edge_Index,
+              Edge,
+              Edge_Array,
+              Less);
 
       begin
          Sort (Input.Edges (1 .. Input.Last_Edge));
@@ -223,8 +222,8 @@ package body Matreshka.Internals.Graphs is
 
          Output.Last_Node := Input.Last_Node;
          Output.Last_Edge := Input.Last_Edge;
-         Output.Nodes     := Input.Nodes;
-         Output.Edges     := Input.Edges;
+         Output.Nodes := Input.Nodes;
+         Output.Edges := Input.Edges;
 
          Input.Last_Node := 0;
          Input.Last_Edge := 0;

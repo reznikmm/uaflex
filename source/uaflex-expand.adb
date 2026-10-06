@@ -53,8 +53,7 @@ with League.String_Vectors;
 package body UAFLEX.Expand is
 
    procedure Expand_Macro
-     (Text : in out League.Strings.Universal_String;
-      Line : Positive);
+     (Text : in out League.Strings.Universal_String; Line : Positive);
 
    procedure To_Regexp (Text : in out League.Strings.Universal_String);
 
@@ -77,9 +76,8 @@ package body UAFLEX.Expand is
    Pattern_Set : constant League.Character_Sets.Universal_Character_Set :=
      League.Character_Sets.Internals.To_Set
        (Matreshka.Internals.Unicode.Ucd.Pattern_Syntax)
-     or
-     League.Character_Sets.Internals.To_Set
-       (Matreshka.Internals.Unicode.Ucd.Pattern_White_Space);
+     or League.Character_Sets.Internals.To_Set
+          (Matreshka.Internals.Unicode.Ucd.Pattern_White_Space);
 
    Operations : constant League.Character_Sets.Universal_Character_Set :=
      League.Character_Sets.To_Set ("\{}[]^$?.*+|()");
@@ -92,8 +90,7 @@ package body UAFLEX.Expand is
    ------------------
 
    procedure Expand_Macro
-     (Text : in out League.Strings.Universal_String;
-      Line : Positive)
+     (Text : in out League.Strings.Universal_String; Line : Positive)
    is
       Found : constant League.Regexps.Regexp_Match := Macro.Find_Match (Text);
       Index : Positive := 1;
@@ -120,9 +117,10 @@ package body UAFLEX.Expand is
                Nodes.Macro_Maps.Element (Pos));
          else
             Ada.Wide_Wide_Text_IO.Put_Line
-              ("Line " & Natural'Wide_Wide_Image (Line) &
-                 " Macro's definition not found for: " &
-                 Name.To_Wide_Wide_String);
+              ("Line "
+               & Natural'Wide_Wide_Image (Line)
+               & " Macro's definition not found for: "
+               & Name.To_Wide_Wide_String);
             Nodes.Success := False;
 
             return;
@@ -141,8 +139,7 @@ package body UAFLEX.Expand is
    begin
       for J in 1 .. Nodes.Rules.Length loop
          declare
-            Item : League.Strings.Universal_String :=
-              Nodes.Rules.Element (J);
+            Item : League.Strings.Universal_String := Nodes.Rules.Element (J);
          begin
             Expand_Macro (Item, Nodes.Lines.Element (J));
             To_Regexp (Item);
@@ -173,7 +170,7 @@ package body UAFLEX.Expand is
               Text.Element (J);
          begin
             case State is
-               when Normal =>
+               when Normal   =>
                   if Item = '"' then
                      Result.Append ("\Q");
                      State := In_Quote;
@@ -201,7 +198,7 @@ package body UAFLEX.Expand is
                      Result.Append (Item);
                   end if;
 
-               when Masked =>
+               when Masked   =>
                   if Pattern_Set.Has (Item) or Escape.Has (Item) then
                      Result.Append ('\');
                      Result.Append (Item);
@@ -215,7 +212,7 @@ package body UAFLEX.Expand is
                      State := Class;
                   end if;
 
-               when Class =>
+               when Class    =>
                   if Item = ']' then
                      if In_Class = C3 then
                         Result.Append ("\-");

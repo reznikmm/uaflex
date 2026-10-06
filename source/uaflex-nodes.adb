@@ -66,8 +66,7 @@ package body UAFLEX.Nodes is
       procedure Each_Inclusive (Cursor : Start_Condition_Maps.Cursor);
 
       function Get_Action
-        (Text : League.Strings.Universal_String)
-        return Positive;
+        (Text : League.Strings.Universal_String) return Positive;
 
       Text  : League.Strings.Universal_String := RegExp;
       To    : constant Natural := Text.Index ('>');
@@ -113,8 +112,7 @@ package body UAFLEX.Nodes is
       --------------------
 
       function Get_Action
-        (Text : League.Strings.Universal_String)
-        return Positive is
+        (Text : League.Strings.Universal_String) return Positive is
       begin
          for J in 1 .. Actions.Length loop
             if Actions.Element (J) = Text then
@@ -134,23 +132,26 @@ package body UAFLEX.Nodes is
          declare
             Conditions : constant League.Strings.Universal_String :=
               Text.Slice (2, To - 1);
-            List : constant League.String_Vectors.Universal_String_Vector :=
-              Conditions.Split (',');
+            List       :
+              constant League.String_Vectors.Universal_String_Vector :=
+                Conditions.Split (',');
          begin
             for J in 1 .. List.Length loop
                declare
                   Condition : constant League.Strings.Universal_String :=
                     List.Element (J);
-                  Cursor : constant Start_Condition_Maps.Cursor :=
+                  Cursor    : constant Start_Condition_Maps.Cursor :=
                     Nodes.Conditions.Find (Condition);
                begin
                   if Start_Condition_Maps.Has_Element (Cursor) then
                      Nodes.Conditions.Update_Element (Cursor, Add'Access);
                   else
                      Ada.Wide_Wide_Text_IO.Put_Line
-                       ("Line:" & Natural'Wide_Wide_Image (Line) & " " &
-                          "No such start condition: " &
-                          Condition.To_Wide_Wide_String);
+                       ("Line:"
+                        & Natural'Wide_Wide_Image (Line)
+                        & " "
+                        & "No such start condition: "
+                        & Condition.To_Wide_Wide_String);
                      Success := False;
                   end if;
                end;

@@ -46,9 +46,9 @@ with League.Strings;
 
 package UAFLEX.Generator.Tables is
 
-   type State_Map is array
-     (Matreshka.Internals.Finite_Automatons.State range <>) of
-        Matreshka.Internals.Finite_Automatons.State;
+   type State_Map is
+     array (Matreshka.Internals.Finite_Automatons.State range <>)
+     of Matreshka.Internals.Finite_Automatons.State;
    --  Map from original states to remaped states
 
    procedure Map_Final_Dead_Ends

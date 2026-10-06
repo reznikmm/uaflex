@@ -73,27 +73,22 @@ is
 
    procedure Each_Condition (Cursor : Nodes.Start_Condition_Maps.Cursor);
    procedure Each
-     (Name : League.Strings.Universal_String;
+     (Name      : League.Strings.Universal_String;
       Condition : Nodes.Start_Condition);
 
    function Read_File
-     (File_Name : String)
-     return League.Strings.Universal_String;
+     (File_Name : String) return League.Strings.Universal_String;
 
-   function To_String
-     (Item : League.Strings.Universal_String)
-     return String
-     renames League.Text_Codecs.To_Exception_Message;
+   function To_String (Item : League.Strings.Universal_String) return String
+   renames League.Text_Codecs.To_Exception_Message;
 
    function To_File_Name
-     (Item      : League.Strings.Universal_String;
-      Extension : Wide_Wide_String)
-     return String;
+     (Item : League.Strings.Universal_String; Extension : Wide_Wide_String)
+      return String;
 
    function "+"
-     (Item : Wide_Wide_String)
-     return League.Strings.Universal_String
-       renames League.Strings.To_Universal_String;
+     (Item : Wide_Wide_String) return League.Strings.Universal_String
+   renames League.Strings.To_Universal_String;
 
    DFA : Matreshka.Internals.Finite_Automatons.DFA_Constructor;
 
@@ -102,14 +97,16 @@ is
    ----------
 
    procedure Each
-     (Name : League.Strings.Universal_String;
+     (Name      : League.Strings.Universal_String;
       Condition : Nodes.Start_Condition)
    is
-      Rule    : Positive;
-      Actions : Matreshka.Internals.Finite_Automatons.Rule_Index_Array
-        (1 .. Condition.Rules.Last_Index);
-      Reg_Exp_List : Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array
-        (1 .. Condition.Rules.Last_Index);
+      Rule         : Positive;
+      Actions      :
+        Matreshka.Internals.Finite_Automatons.Rule_Index_Array
+          (1 .. Condition.Rules.Last_Index);
+      Reg_Exp_List :
+        Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array
+          (1 .. Condition.Rules.Last_Index);
    begin
       for J in Actions'Range loop
          Rule := Condition.Rules.Element (J);
@@ -134,8 +131,7 @@ is
    ---------------
 
    function Read_File
-     (File_Name : String)
-     return League.Strings.Universal_String
+     (File_Name : String) return League.Strings.Universal_String
    is
       Decoder : constant League.Text_Codecs.Text_Codec :=
         League.Text_Codecs.Codec_For_Application_Locale;
@@ -146,9 +142,9 @@ is
       Length : constant Ada.Streams.Stream_Element_Offset :=
         Ada.Streams.Stream_Element_Count (Size);
 
-      File   : Ada.Streams.Stream_IO.File_Type;
-      Data   : Ada.Streams.Stream_Element_Array (1 .. Length);
-      Last   : Ada.Streams.Stream_Element_Offset;
+      File : Ada.Streams.Stream_IO.File_Type;
+      Data : Ada.Streams.Stream_Element_Array (1 .. Length);
+      Last : Ada.Streams.Stream_Element_Offset;
    begin
       Ada.Streams.Stream_IO.Open
         (File, Ada.Streams.Stream_IO.In_File, File_Name);
@@ -163,9 +159,8 @@ is
    ------------------
 
    function To_File_Name
-     (Item      : League.Strings.Universal_String;
-      Extension : Wide_Wide_String)
-     return String
+     (Item : League.Strings.Universal_String; Extension : Wide_Wide_String)
+      return String
    is
       List : League.String_Vectors.Universal_String_Vector;
       Name : League.Strings.Universal_String;
@@ -175,9 +170,9 @@ is
       return Name.To_UTF_8_String;
    end To_File_Name;
 
-   Initial  : League.String_Vectors.Universal_String_Vector;
-   Source   : aliased String_Sources.String_Source;
-   Classes  : Matreshka.Internals.Finite_Automatons.Vectors.Vector;
+   Initial : League.String_Vectors.Universal_String_Vector;
+   Source  : aliased String_Sources.String_Source;
+   Classes : Matreshka.Internals.Finite_Automatons.Vectors.Vector;
 begin
    Source.Create (Read_File (To_String (Input)));
    Parser.Scanner.Set_Source (Source'Unchecked_Access);
@@ -200,20 +195,23 @@ begin
       return;
    end if;
 
-   Nodes.Regexp := new
-     Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array
-       (1 .. Nodes.Rules.Length);
+   Nodes.Regexp :=
+     new Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array
+           (1 .. Nodes.Rules.Length);
 
    for J in 1 .. Nodes.Rules.Length loop
       begin
-         Nodes.Regexp (J) := Matreshka.Internals.Regexps.Compiler.Compile
-           (League.Strings.Internals.Internal (Nodes.Rules.Element (J)));
+         Nodes.Regexp (J) :=
+           Matreshka.Internals.Regexps.Compiler.Compile
+             (League.Strings.Internals.Internal (Nodes.Rules.Element (J)));
       exception
          when E : Constraint_Error | Program_Error =>
             Ada.Wide_Wide_Text_IO.Put_Line
-              ("Line " & Natural'Wide_Wide_Image (Nodes.Lines.Element (J)) &
-                 " error on compile regexp '" &
-                 Nodes.Rules.Element (J).To_Wide_Wide_String & "'");
+              ("Line "
+               & Natural'Wide_Wide_Image (Nodes.Lines.Element (J))
+               & " error on compile regexp '"
+               & Nodes.Rules.Element (J).To_Wide_Wide_String
+               & "'");
             Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message (E));
             Nodes.Success := False;
       end;
@@ -241,13 +239,7 @@ begin
          Generator.Tables.Map_Final_Dead_Ends (X, Dead, Final, Map);
 
          Generator.Tables.Types
-           (X,
-            Map,
-            Dead,
-            Final,
-            Types,
-            To_File_Name (Types, ".ads"),
-            Classes);
+           (X, Map, Dead, Final, Types, To_File_Name (Types, ".ads"), Classes);
 
          Generator.Tables.Go
            (X,
