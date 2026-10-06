@@ -28,3 +28,6 @@ command = ["echo", "alr", "-C" , "testsuite", "run"]
 [[depends-on]]
 matreshka_league = "^21.0.0"
 gnat_native = "<16"
+
+[[depends-on]]
+vss_extra = "^26.2.0"

@@ -41,10 +41,9 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
+with Ada.Strings.Wide_Wide_Fixed;
 with Ada.Wide_Wide_Text_IO;
 with UAFLEX.Nodes;
-with Matreshka.Internals.Unicode.Ucd;
-with League.Character_Sets.Internals;
 with League.Characters;
 with League.Regexps;
 with League.Strings;
@@ -71,19 +70,43 @@ package body UAFLEX.Expand is
    Macro : constant League.Regexps.Regexp_Pattern :=
      League.Regexps.Compile (Macro_Reference);
 
-   use type League.Character_Sets.Universal_Character_Set;
+   Syntax : constant Wide_Wide_String := "\^$.*+?()[]{}|";
+   --  Characters, which have a special meaning in ECMAScript regexp, and
+   --  can be escaped by a backslash.
 
-   Pattern_Set : constant League.Character_Sets.Universal_Character_Set :=
-     League.Character_Sets.Internals.To_Set
-       (Matreshka.Internals.Unicode.Ucd.Pattern_Syntax)
-     or League.Character_Sets.Internals.To_Set
-          (Matreshka.Internals.Unicode.Ucd.Pattern_White_Space);
+   Escape : constant Wide_Wide_String := "aefnrtvcuUpP";
 
-   Operations : constant League.Character_Sets.Universal_Character_Set :=
-     League.Character_Sets.To_Set ("\{}[]^$?.*+|()");
+   function Is_Syntax
+     (Item : League.Characters.Universal_Character) return Boolean;
 
-   Escape : constant League.Character_Sets.Universal_Character_Set :=
-     League.Character_Sets.To_Set ("aefnrtvcuUpP");
+   function Is_Escape
+     (Item : League.Characters.Universal_Character) return Boolean;
+
+   ---------------
+   -- Is_Escape --
+   ---------------
+
+   function Is_Escape
+     (Item : League.Characters.Universal_Character) return Boolean is
+   begin
+      return
+        Ada.Strings.Wide_Wide_Fixed.Index
+          (Escape, (1 => Item.To_Wide_Wide_Character))
+        /= 0;
+   end Is_Escape;
+
+   ---------------
+   -- Is_Syntax --
+   ---------------
+
+   function Is_Syntax
+     (Item : League.Characters.Universal_Character) return Boolean is
+   begin
+      return
+        Ada.Strings.Wide_Wide_Fixed.Index
+          (Syntax, (1 => Item.To_Wide_Wide_Character))
+        /= 0;
+   end Is_Syntax;
 
    ------------------
    -- Expand_Macro --
@@ -172,7 +195,6 @@ package body UAFLEX.Expand is
             case State is
                when Normal   =>
                   if Item = '"' then
-                     Result.Append ("\Q");
                      State := In_Quote;
                   elsif Item = '\' then
                      State := Masked;
@@ -181,25 +203,26 @@ package body UAFLEX.Expand is
                      Result.Append (Item);
                      State := Class;
                      In_Class := First;
-                  elsif Operations.Has (Item) then
-                     Result.Append (Item);
-                  elsif Pattern_Set.Has (Item) then
-                     Result.Append ('\');
-                     Result.Append (Item);
                   else
                      Result.Append (Item);
                   end if;
 
                when In_Quote =>
                   if Item = '"' then
-                     Result.Append ("\E");
                      State := Normal;
                   else
+                     if Is_Syntax (Item) then
+                        Result.Append ('\');
+                     end if;
+
                      Result.Append (Item);
                   end if;
 
                when Masked   =>
-                  if Pattern_Set.Has (Item) or Escape.Has (Item) then
+                  if Is_Syntax (Item)
+                    or Is_Escape (Item)
+                    or (In_Class /= First and Item = '-')
+                  then
                      Result.Append ('\');
                      Result.Append (Item);
                   else
@@ -246,7 +269,7 @@ package body UAFLEX.Expand is
 
                      if Item = '\' then
                         State := Masked;
-                     elsif Pattern_Set.Has (Item) then
+                     elsif Is_Syntax (Item) or Item = '-' then
                         Result.Append ('\');
                         Result.Append (Item);
                      else

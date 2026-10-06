@@ -45,7 +45,7 @@
 with Ada.Containers.Generic_Array_Sort;
 with Ada.Unchecked_Deallocation;
 
-package body Matreshka.Internals.Graphs is
+package body UAFLEX.Graphs is
 
    procedure Free is new
      Ada.Unchecked_Deallocation (Edge_Array, Edge_Array_Access);
@@ -377,4 +377,4 @@ package body Matreshka.Internals.Graphs is
       return Self.Graph.Nodes (Self.Target);
    end Target_Node;
 
-end Matreshka.Internals.Graphs;
+end UAFLEX.Graphs;

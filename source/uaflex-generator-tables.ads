@@ -41,45 +41,45 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
-with Matreshka.Internals.Finite_Automatons;
+with UAFLEX.Finite_Automatons;
 with League.Strings;
 
 package UAFLEX.Generator.Tables is
 
    type State_Map is
-     array (Matreshka.Internals.Finite_Automatons.State range <>)
-     of Matreshka.Internals.Finite_Automatons.State;
+     array (UAFLEX.Finite_Automatons.State range <>)
+     of UAFLEX.Finite_Automatons.State;
    --  Map from original states to remaped states
 
    procedure Map_Final_Dead_Ends
-     (DFA            : Matreshka.Internals.Finite_Automatons.DFA;
-      First_Dead_End : out Matreshka.Internals.Finite_Automatons.State;
-      First_Final    : out Matreshka.Internals.Finite_Automatons.State;
+     (DFA            : UAFLEX.Finite_Automatons.DFA;
+      First_Dead_End : out UAFLEX.Finite_Automatons.State;
+      First_Final    : out UAFLEX.Finite_Automatons.State;
       Dead_End_Map   : out State_Map);
    --  Remap final states without any further edges to the end of state range
 
    procedure Split_To_Distinct
-     (List   : Matreshka.Internals.Finite_Automatons.Vectors.Vector;
-      Result : out Matreshka.Internals.Finite_Automatons.Vectors.Vector);
+     (List   : UAFLEX.Finite_Automatons.Vectors.Vector;
+      Result : out UAFLEX.Finite_Automatons.Vectors.Vector);
 
    procedure Go
-     (DFA            : Matreshka.Internals.Finite_Automatons.DFA;
+     (DFA            : UAFLEX.Finite_Automatons.DFA;
       Dead_End_Map   : State_Map;
-      First_Dead_End : Matreshka.Internals.Finite_Automatons.State;
-      First_Final    : Matreshka.Internals.Finite_Automatons.State;
+      First_Dead_End : UAFLEX.Finite_Automatons.State;
+      First_Final    : UAFLEX.Finite_Automatons.State;
       Unit           : League.Strings.Universal_String;
       File           : String;
       Types          : League.Strings.Universal_String;
       Scanner        : League.Strings.Universal_String;
-      Classes        : Matreshka.Internals.Finite_Automatons.Vectors.Vector);
+      Classes        : UAFLEX.Finite_Automatons.Vectors.Vector);
 
    procedure Types
-     (DFA            : Matreshka.Internals.Finite_Automatons.DFA;
+     (DFA            : UAFLEX.Finite_Automatons.DFA;
       Dead_End_Map   : State_Map;
-      First_Dead_End : Matreshka.Internals.Finite_Automatons.State;
-      First_Final    : Matreshka.Internals.Finite_Automatons.State;
+      First_Dead_End : UAFLEX.Finite_Automatons.State;
+      First_Final    : UAFLEX.Finite_Automatons.State;
       Unit           : League.Strings.Universal_String;
       File           : String;
-      Classes        : Matreshka.Internals.Finite_Automatons.Vectors.Vector);
+      Classes        : UAFLEX.Finite_Automatons.Vectors.Vector);
 
 end UAFLEX.Generator.Tables;

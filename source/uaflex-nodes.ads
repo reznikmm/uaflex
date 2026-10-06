@@ -45,7 +45,7 @@ with League.String_Vectors;
 with League.Strings;
 with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;
-with Matreshka.Internals.Finite_Automatons;
+with UAFLEX.Regexps;
 
 package UAFLEX.Nodes is
 
@@ -97,8 +97,7 @@ package UAFLEX.Nodes is
        (League.Strings.Universal_String,   --  Condition name
         Start_Condition);
 
-   type Shared_Pattern_Array_Access is
-     access all Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array;
+   type Program_Array_Access is access all UAFLEX.Regexps.Program_Array;
 
    --  List of regexp from input file
    Rules      : League.String_Vectors.Universal_String_Vector;
@@ -113,7 +112,7 @@ package UAFLEX.Nodes is
    --  Map macros name to macros value
    Macros     : Macro_Maps.Map;
    --  Array of compiled regexps
-   Regexp     : Shared_Pattern_Array_Access;
+   Regexp     : Program_Array_Access;
 
    Success : Boolean := True;
 

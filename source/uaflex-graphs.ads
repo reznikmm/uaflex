@@ -42,7 +42,7 @@
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
 
-package Matreshka.Internals.Graphs is
+package UAFLEX.Graphs is
 
    pragma Preelaborate;
 
@@ -151,4 +151,4 @@ private
       Edges     : Edge_Array_Access;
    end record;
 
-end Matreshka.Internals.Graphs;
+end UAFLEX.Graphs;

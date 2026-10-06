@@ -46,24 +46,24 @@ with Ada.Containers;
 with Ada.Containers.Ordered_Maps;
 with Ada.Strings.Wide_Wide_Fixed;
 with Ada.Wide_Wide_Text_IO;
-with League.Character_Sets;
+with UAFLEX.Character_Sets;
+with VSS.Unicode;
 
 with Matreshka.Internals.Unicode.Ucd;
-with Matreshka.Internals.Graphs;
+with UAFLEX.Graphs;
 --  with Debug;
 
 package body UAFLEX.Generator.Tables is
 
-   package Char_Set_Vectors renames
-     Matreshka.Internals.Finite_Automatons.Vectors;
+   package Char_Set_Vectors renames UAFLEX.Finite_Automatons.Vectors;
 
-   package Start_Maps renames Matreshka.Internals.Finite_Automatons.Start_Maps;
-   package State_Maps renames Matreshka.Internals.Finite_Automatons.State_Maps;
+   package Start_Maps renames UAFLEX.Finite_Automatons.Start_Maps;
+   package State_Maps renames UAFLEX.Finite_Automatons.State_Maps;
 
-   subtype State is Matreshka.Internals.Finite_Automatons.State;
+   subtype State is UAFLEX.Finite_Automatons.State;
    use type State;
 
-   subtype Character_Class is Matreshka.Internals.Graphs.Edge_Identifier'Base;
+   subtype Character_Class is UAFLEX.Graphs.Edge_Identifier'Base;
 
    subtype First_Stage_Index is
      Matreshka.Internals.Unicode.Ucd.First_Stage_Index;
@@ -83,15 +83,15 @@ package body UAFLEX.Generator.Tables is
    --------
 
    procedure Go
-     (DFA            : Matreshka.Internals.Finite_Automatons.DFA;
+     (DFA            : UAFLEX.Finite_Automatons.DFA;
       Dead_End_Map   : State_Map;
-      First_Dead_End : Matreshka.Internals.Finite_Automatons.State;
-      First_Final    : Matreshka.Internals.Finite_Automatons.State;
+      First_Dead_End : UAFLEX.Finite_Automatons.State;
+      First_Final    : UAFLEX.Finite_Automatons.State;
       Unit           : League.Strings.Universal_String;
       File           : String;
       Types          : League.Strings.Universal_String;
       Scanner        : League.Strings.Universal_String;
-      Classes        : Matreshka.Internals.Finite_Automatons.Vectors.Vector)
+      Classes        : UAFLEX.Finite_Automatons.Vectors.Vector)
    is
       pragma Unreferenced (Types);
       procedure P (Text : Wide_Wide_String);
@@ -100,8 +100,7 @@ package body UAFLEX.Generator.Tables is
       procedure Print_Switch;
       procedure Print_Rules;
       procedure Print_Classes
-        (Id    : Matreshka.Internals.Graphs.Edge_Identifier;
-         Count : in out Natural);
+        (Id : UAFLEX.Graphs.Edge_Identifier; Count : in out Natural);
       function Get_Second (X : First_Stage_Index) return Second_Stage_Array;
 
       Output : Ada.Wide_Wide_Text_IO.File_Type;
@@ -114,10 +113,10 @@ package body UAFLEX.Generator.Tables is
 
       function Get_Second (X : First_Stage_Index) return Second_Stage_Array is
          Result : Second_Stage_Array := (others => 0);
-         Char   : Wide_Wide_Character;
+         Char   : VSS.Unicode.Code_Point;
       begin
          for J in Result'Range loop
-            Char := Wide_Wide_Character'Val (Natural (X) * 256 + Natural (J));
+            Char := VSS.Unicode.Code_Point (Natural (X) * 256 + Natural (J));
 
             for C in Classes.First_Index .. Classes.Last_Index loop
                if Classes.Element (C).Has (Char) then
@@ -229,10 +228,9 @@ package body UAFLEX.Generator.Tables is
       end Print_Char_Classes;
 
       procedure Print_Classes
-        (Id    : Matreshka.Internals.Graphs.Edge_Identifier;
-         Count : in out Natural)
+        (Id : UAFLEX.Graphs.Edge_Identifier; Count : in out Natural)
       is
-         Set   : constant League.Character_Sets.Universal_Character_Set :=
+         Set   : constant UAFLEX.Character_Sets.Character_Set :=
            DFA.Edge_Char_Set.Element (Id);
          First : Boolean := True;
       begin
@@ -301,15 +299,14 @@ package body UAFLEX.Generator.Tables is
 
          for J in 1 .. DFA.Graph.Node_Count loop
             declare
-               use type Matreshka.Internals.Graphs.Edge_Index;
+               use type UAFLEX.Graphs.Edge_Index;
 
                Count : Natural := 0;
-               Edge  : Matreshka.Internals.Graphs.Edge;
-               Item  : constant Matreshka.Internals.Graphs.Node :=
-                 DFA.Graph.Get_Node (J);
-               F     : constant Matreshka.Internals.Graphs.Edge_Index :=
+               Edge  : UAFLEX.Graphs.Edge;
+               Item  : constant UAFLEX.Graphs.Node := DFA.Graph.Get_Node (J);
+               F     : constant UAFLEX.Graphs.Edge_Index :=
                  Item.First_Edge_Index;
-               L     : constant Matreshka.Internals.Graphs.Edge_List_Length :=
+               L     : constant UAFLEX.Graphs.Edge_List_Length :=
                  Item.Last_Edge_Index;
             begin
                if Dead_End_Map (J) < First_Dead_End then
@@ -428,14 +425,14 @@ package body UAFLEX.Generator.Tables is
    ---------------------------
 
    procedure Map_Final_Dead_Ends
-     (DFA            : Matreshka.Internals.Finite_Automatons.DFA;
-      First_Dead_End : out Matreshka.Internals.Finite_Automatons.State;
-      First_Final    : out Matreshka.Internals.Finite_Automatons.State;
+     (DFA            : UAFLEX.Finite_Automatons.DFA;
+      First_Dead_End : out UAFLEX.Finite_Automatons.State;
+      First_Final    : out UAFLEX.Finite_Automatons.State;
       Dead_End_Map   : out State_Map)
    is
-      Dead_End_Index : Matreshka.Internals.Finite_Automatons.State;
-      Final_Index    : Matreshka.Internals.Finite_Automatons.State;
-      Free_Index     : Matreshka.Internals.Finite_Automatons.State;
+      Dead_End_Index : UAFLEX.Finite_Automatons.State;
+      Final_Index    : UAFLEX.Finite_Automatons.State;
+      Free_Index     : UAFLEX.Finite_Automatons.State;
    begin
       First_Dead_End := Dead_End_Map'Last + 1;
       First_Final := First_Dead_End;
@@ -477,20 +474,17 @@ package body UAFLEX.Generator.Tables is
    begin
       for J in List.First_Index .. List.Last_Index loop
          declare
-            use League.Character_Sets;
-            Rest : Universal_Character_Set := List.Element (J);
+            use UAFLEX.Character_Sets;
+            Rest : Character_Set := List.Element (J);
          begin
             for K in Result.First_Index .. Result.Last_Index loop
                declare
-                  Item         : constant Universal_Character_Set :=
-                    Result.Element (K);
-                  Intersection : constant Universal_Character_Set :=
-                    Item and Rest;
+                  Item         : constant Character_Set := Result.Element (K);
+                  Intersection : constant Character_Set := Item and Rest;
                begin
                   if not Intersection.Is_Empty then
                      declare
-                        Extra : constant Universal_Character_Set :=
-                          Item - Rest;
+                        Extra : constant Character_Set := Item - Rest;
                      begin
                         if not Extra.Is_Empty then
                            Result.Append (Extra);
@@ -517,10 +511,10 @@ package body UAFLEX.Generator.Tables is
    -----------
 
    procedure Types
-     (DFA            : Matreshka.Internals.Finite_Automatons.DFA;
+     (DFA            : UAFLEX.Finite_Automatons.DFA;
       Dead_End_Map   : State_Map;
-      First_Dead_End : Matreshka.Internals.Finite_Automatons.State;
-      First_Final    : Matreshka.Internals.Finite_Automatons.State;
+      First_Dead_End : UAFLEX.Finite_Automatons.State;
+      First_Final    : UAFLEX.Finite_Automatons.State;
       Unit           : League.Strings.Universal_String;
       File           : String;
       Classes        : Char_Set_Vectors.Vector)

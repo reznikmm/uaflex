@@ -43,22 +43,21 @@
 ------------------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;
-with League.Character_Sets;
-with League.String_Vectors;
 with League.Strings;
-with Matreshka.Internals.Graphs;
-with Matreshka.Internals.Regexps;
+with UAFLEX.Character_Sets;
+with UAFLEX.Graphs;
+with UAFLEX.Regexps;
 
-package Matreshka.Internals.Finite_Automatons is
+package UAFLEX.Finite_Automatons is
 
-   subtype State is Matreshka.Internals.Graphs.Node_Index;
+   subtype State is UAFLEX.Graphs.Node_Index;
    use type State;
 
    package Vectors is new
      Ada.Containers.Vectors
-       (Index_Type   => Matreshka.Internals.Graphs.Edge_Identifier,
-        Element_Type => League.Character_Sets.Universal_Character_Set,
-        "="          => League.Character_Sets."=");
+       (Index_Type   => UAFLEX.Graphs.Edge_Identifier,
+        Element_Type => UAFLEX.Character_Sets.Character_Set,
+        "="          => UAFLEX.Character_Sets."=");
 
    subtype Rule_Index is Positive;
 
@@ -75,7 +74,7 @@ package Matreshka.Internals.Finite_Automatons is
 
    type DFA is limited record
       Start         : Start_Maps.Map;
-      Graph         : Matreshka.Internals.Graphs.Graph;
+      Graph         : UAFLEX.Graphs.Graph;
       Edge_Char_Set : Vectors.Vector;
       Final         : State_Maps.Map;
    end record;
@@ -84,21 +83,10 @@ package Matreshka.Internals.Finite_Automatons is
 
    type DFA_Constructor is tagged limited private;
 
-   type Shared_Pattern_Array is
-     array (Positive range <>)
-     of Matreshka.Internals.Regexps.Shared_Pattern_Access;
-   --  List of regexp
-
    procedure Compile
      (Self    : in out DFA_Constructor;
       Start   : League.Strings.Universal_String;
-      List    : Shared_Pattern_Array;
-      Actions : Rule_Index_Array);
-
-   procedure Compile
-     (Self    : in out DFA_Constructor;
-      Start   : League.Strings.Universal_String;
-      List    : League.String_Vectors.Universal_String_Vector;
+      List    : UAFLEX.Regexps.Program_Array;
       Actions : Rule_Index_Array);
 
    procedure Complete (Input : in out DFA_Constructor; Output : out DFA);
@@ -109,9 +97,9 @@ private
 
    type DFA_Constructor is tagged limited record
       Start         : Start_Maps.Map;
-      Graph         : Matreshka.Internals.Graphs.Constructor.Graph;
+      Graph         : UAFLEX.Graphs.Constructor.Graph;
       Edge_Char_Set : Vectors.Vector;
       Final         : State_Maps.Map;
    end record;
 
-end Matreshka.Internals.Finite_Automatons;
+end UAFLEX.Finite_Automatons;

@@ -44,9 +44,7 @@
 with Parser;
 
 with Ada.Directories;
-with Ada.Exceptions;
 with Ada.Streams.Stream_IO;
-with Ada.Text_IO;
 with Ada.Wide_Wide_Text_IO;
 with UAFLEX.Expand;
 with UAFLEX.Generator.Tables;
@@ -54,10 +52,12 @@ with UAFLEX.Generator.OOP_Handler;
 with UAFLEX.Nodes;
 with League.String_Vectors;
 with League.Strings;
-with League.Strings.Internals;
 with League.Text_Codecs;
-with Matreshka.Internals.Finite_Automatons;
-with Matreshka.Internals.Regexps.Compiler;
+with UAFLEX.Finite_Automatons;
+with UAFLEX.Regexps;
+with VSS.Regular_Expressions.ECMA_Parser_Wrap;
+with VSS.Strings;
+with VSS.Strings.Conversions;
 
 with String_Sources;
 
@@ -90,7 +90,7 @@ is
      (Item : Wide_Wide_String) return League.Strings.Universal_String
    renames League.Strings.To_Universal_String;
 
-   DFA : Matreshka.Internals.Finite_Automatons.DFA_Constructor;
+   DFA : UAFLEX.Finite_Automatons.DFA_Constructor;
 
    ----------
    -- Each --
@@ -102,11 +102,10 @@ is
    is
       Rule         : Positive;
       Actions      :
-        Matreshka.Internals.Finite_Automatons.Rule_Index_Array
+        UAFLEX.Finite_Automatons.Rule_Index_Array
           (1 .. Condition.Rules.Last_Index);
       Reg_Exp_List :
-        Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array
-          (1 .. Condition.Rules.Last_Index);
+        UAFLEX.Regexps.Program_Array (1 .. Condition.Rules.Last_Index);
    begin
       for J in Actions'Range loop
          Rule := Condition.Rules.Element (J);
@@ -172,7 +171,7 @@ is
 
    Initial : League.String_Vectors.Universal_String_Vector;
    Source  : aliased String_Sources.String_Source;
-   Classes : Matreshka.Internals.Finite_Automatons.Vectors.Vector;
+   Classes : UAFLEX.Finite_Automatons.Vectors.Vector;
 begin
    Source.Create (Read_File (To_String (Input)));
    Parser.Scanner.Set_Source (Source'Unchecked_Access);
@@ -195,25 +194,29 @@ begin
       return;
    end if;
 
-   Nodes.Regexp :=
-     new Matreshka.Internals.Finite_Automatons.Shared_Pattern_Array
-           (1 .. Nodes.Rules.Length);
+   Nodes.Regexp := new UAFLEX.Regexps.Program_Array (1 .. Nodes.Rules.Length);
 
    for J in 1 .. Nodes.Rules.Length loop
+      declare
+         Error : VSS.Strings.Virtual_String;
       begin
-         Nodes.Regexp (J) :=
-           Matreshka.Internals.Regexps.Compiler.Compile
-             (League.Strings.Internals.Internal (Nodes.Rules.Element (J)));
-      exception
-         when E : Constraint_Error | Program_Error =>
+         VSS.Regular_Expressions.ECMA_Parser_Wrap.Parse
+           (VSS.Strings.To_Virtual_String
+              (Nodes.Rules.Element (J).To_Wide_Wide_String),
+            Nodes.Regexp (J),
+            Error);
+
+         if not Error.Is_Empty then
             Ada.Wide_Wide_Text_IO.Put_Line
               ("Line "
                & Natural'Wide_Wide_Image (Nodes.Lines.Element (J))
                & " error on compile regexp '"
                & Nodes.Rules.Element (J).To_Wide_Wide_String
                & "'");
-            Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message (E));
+            Ada.Wide_Wide_Text_IO.Put_Line
+              (VSS.Strings.Conversions.To_Wide_Wide_String (Error));
             Nodes.Success := False;
+         end if;
       end;
    end loop;
 
@@ -225,16 +228,16 @@ begin
    Nodes.Conditions.Iterate (Each_Condition'Access);
 
    declare
-      X : Matreshka.Internals.Finite_Automatons.DFA;
+      X : UAFLEX.Finite_Automatons.DFA;
    begin
       DFA.Complete (Output => X);
-      Matreshka.Internals.Finite_Automatons.Minimize (X);
+      UAFLEX.Finite_Automatons.Minimize (X);
       Generator.Tables.Split_To_Distinct (X.Edge_Char_Set, Classes);
 
       declare
          Map   : Generator.Tables.State_Map (1 .. X.Graph.Node_Count);
-         Dead  : Matreshka.Internals.Finite_Automatons.State;
-         Final : Matreshka.Internals.Finite_Automatons.State;
+         Dead  : UAFLEX.Finite_Automatons.State;
+         Final : UAFLEX.Finite_Automatons.State;
       begin
          Generator.Tables.Map_Final_Dead_Ends (X, Dead, Final, Map);
 
