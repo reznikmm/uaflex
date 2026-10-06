@@ -45,6 +45,6 @@
 package UAFLEX.Expand is
 
    procedure RegExps;
-   --  Expand macros inside regexp. Convert uaflex regexp to League.Regexps
+   --  Expand macros inside regexp. Convert uaflex regexp to ECMAScript regexp
 
 end UAFLEX.Expand;

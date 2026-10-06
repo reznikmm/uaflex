@@ -45,14 +45,15 @@ with Parser;
 
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
+with Ada.Strings.UTF_Encoding;
 with Ada.Wide_Wide_Text_IO;
 with UAFLEX.Expand;
 with UAFLEX.Generator.Tables;
 with UAFLEX.Generator.OOP_Handler;
 with UAFLEX.Nodes;
-with League.String_Vectors;
 with League.Strings;
-with League.Text_Codecs;
+with VSS.String_Vectors;
+with VSS.Transformers.Casing;
 with UAFLEX.Finite_Automatons;
 with UAFLEX.Regexps;
 with VSS.Regular_Expressions.ECMA_Parser_Wrap;
@@ -62,33 +63,30 @@ with VSS.Strings.Conversions;
 with String_Sources;
 
 procedure UAFLEX.Run
-  (Handler : League.Strings.Universal_String;
-   Input   : League.Strings.Universal_String;
-   Tokens  : League.Strings.Universal_String;
-   Types   : League.Strings.Universal_String;
-   Scanner : League.Strings.Universal_String;
+  (Handler : VSS.Strings.Virtual_String;
+   Input   : VSS.Strings.Virtual_String;
+   Tokens  : VSS.Strings.Virtual_String;
+   Types   : VSS.Strings.Virtual_String;
+   Scanner : VSS.Strings.Virtual_String;
    Success : out Boolean)
 is
-   use type League.Strings.Universal_String;
+   use type VSS.Strings.Virtual_String;
 
    procedure Each_Condition (Cursor : Nodes.Start_Condition_Maps.Cursor);
    procedure Each
-     (Name      : League.Strings.Universal_String;
-      Condition : Nodes.Start_Condition);
+     (Name : VSS.Strings.Virtual_String; Condition : Nodes.Start_Condition);
 
-   function Read_File
-     (File_Name : String) return League.Strings.Universal_String;
+   function Read_File (File_Name : String) return VSS.Strings.Virtual_String;
 
-   function To_String (Item : League.Strings.Universal_String) return String
-   renames League.Text_Codecs.To_Exception_Message;
+   function To_String (Item : VSS.Strings.Virtual_String) return String
+   is (VSS.Strings.Conversions.To_UTF_8_String (Item));
 
    function To_File_Name
-     (Item : League.Strings.Universal_String; Extension : Wide_Wide_String)
+     (Item : VSS.Strings.Virtual_String; Extension : Wide_Wide_String)
       return String;
 
-   function "+"
-     (Item : Wide_Wide_String) return League.Strings.Universal_String
-   renames League.Strings.To_Universal_String;
+   function "+" (Item : Wide_Wide_String) return VSS.Strings.Virtual_String
+   renames VSS.Strings.To_Virtual_String;
 
    DFA : UAFLEX.Finite_Automatons.DFA_Constructor;
 
@@ -97,8 +95,7 @@ is
    ----------
 
    procedure Each
-     (Name      : League.Strings.Universal_String;
-      Condition : Nodes.Start_Condition)
+     (Name : VSS.Strings.Virtual_String; Condition : Nodes.Start_Condition)
    is
       Rule         : Positive;
       Actions      :
@@ -129,28 +126,19 @@ is
    -- Read_File --
    ---------------
 
-   function Read_File
-     (File_Name : String) return League.Strings.Universal_String
-   is
-      Decoder : constant League.Text_Codecs.Text_Codec :=
-        League.Text_Codecs.Codec_For_Application_Locale;
-
+   function Read_File (File_Name : String) return VSS.Strings.Virtual_String is
       Size : constant Ada.Directories.File_Size :=
         Ada.Directories.Size (File_Name);
 
-      Length : constant Ada.Streams.Stream_Element_Offset :=
-        Ada.Streams.Stream_Element_Count (Size);
-
       File : Ada.Streams.Stream_IO.File_Type;
-      Data : Ada.Streams.Stream_Element_Array (1 .. Length);
-      Last : Ada.Streams.Stream_Element_Offset;
+      Data : Ada.Strings.UTF_Encoding.UTF_8_String (1 .. Natural (Size));
    begin
       Ada.Streams.Stream_IO.Open
         (File, Ada.Streams.Stream_IO.In_File, File_Name);
-      Ada.Streams.Stream_IO.Read (File, Data, Last);
+      String'Read (Ada.Streams.Stream_IO.Stream (File), Data);
       Ada.Streams.Stream_IO.Close (File);
 
-      return Decoder.Decode (Data (1 .. Last));
+      return VSS.Strings.Conversions.To_Virtual_String (Data);
    end Read_File;
 
    ------------------
@@ -158,26 +146,30 @@ is
    ------------------
 
    function To_File_Name
-     (Item : League.Strings.Universal_String; Extension : Wide_Wide_String)
+     (Item : VSS.Strings.Virtual_String; Extension : Wide_Wide_String)
       return String
    is
-      List : League.String_Vectors.Universal_String_Vector;
-      Name : League.Strings.Universal_String;
+      List : VSS.String_Vectors.Virtual_String_Vector;
+      Name : VSS.Strings.Virtual_String;
    begin
-      List := Item.To_Lowercase.Split ('.');
-      Name := List.Join ("-") & Extension;
-      return Name.To_UTF_8_String;
+      List :=
+        Item.Transform (VSS.Transformers.Casing.To_Lowercase).Split ('.');
+      Name := List.Join ('-');
+      Name.Append (VSS.Strings.To_Virtual_String (Extension));
+      return VSS.Strings.Conversions.To_UTF_8_String (Name);
    end To_File_Name;
 
-   Initial : League.String_Vectors.Universal_String_Vector;
+   Initial : VSS.String_Vectors.Virtual_String_Vector;
    Source  : aliased String_Sources.String_Source;
    Classes : UAFLEX.Finite_Automatons.Vectors.Vector;
 begin
-   Source.Create (Read_File (To_String (Input)));
+   Source.Create
+     (League.Strings.From_UTF_8_String
+        (To_String (Read_File (To_String (Input)))));
    Parser.Scanner.Set_Source (Source'Unchecked_Access);
    Parser.Scanner.Set_Handler (Parser.Handler'Unchecked_Access);
 
-   Initial.Append (League.Strings.To_Universal_String ("INITIAL"));
+   Initial.Append ("INITIAL");
    Nodes.Add_Start_Conditions (Initial, False);
 
    Parser.YYParse;
@@ -202,7 +194,8 @@ begin
       begin
          VSS.Regular_Expressions.ECMA_Parser_Wrap.Parse
            (VSS.Strings.To_Virtual_String
-              (Nodes.Rules.Element (J).To_Wide_Wide_String),
+              (VSS.Strings.Conversions.To_Wide_Wide_String
+                 (Nodes.Rules.Element (J))),
             Nodes.Regexp (J),
             Error);
 
@@ -211,7 +204,8 @@ begin
               ("Line "
                & Natural'Wide_Wide_Image (Nodes.Lines.Element (J))
                & " error on compile regexp '"
-               & Nodes.Rules.Element (J).To_Wide_Wide_String
+               & VSS.Strings.Conversions.To_Wide_Wide_String
+                   (Nodes.Rules.Element (J))
                & "'");
             Ada.Wide_Wide_Text_IO.Put_Line
               (VSS.Strings.Conversions.To_Wide_Wide_String (Error));
@@ -250,7 +244,8 @@ begin
             Dead,
             Final,
             +"Tables",
-            To_File_Name (Scanner & ".Tables", ".adb"),
+            To_File_Name
+              (Scanner & VSS.Strings.Virtual_String'(".Tables"), ".adb"),
             Types,
             Scanner,
             Classes);
@@ -267,7 +262,8 @@ begin
 
    Generator.OOP_Handler.On_Accept
      (Nodes.Actions,
-      To_File_Name (Scanner & ".On_Accept", ".adb"),
+      To_File_Name
+        (Scanner & VSS.Strings.Virtual_String'(".On_Accept"), ".adb"),
       Types,
       Handler,
       Scanner,

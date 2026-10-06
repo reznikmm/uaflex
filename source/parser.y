@@ -104,15 +104,15 @@ rule: Regexp_Token Action_Token
 ;
 
 Name_Token: Name
-  { $$ := UAFLEX.Nodes.To_Node (Scanner.Get_Text); }
+  { $$ := UAFLEX.Nodes.To_Node (Get_Text); }
 ;
 
 Regexp_Token: Regexp
-  { $$ := UAFLEX.Nodes.To_Node (Scanner.Get_Text); Line := Handler.Get_Line; }
+  { $$ := UAFLEX.Nodes.To_Node (Get_Text); Line := Handler.Get_Line; }
 ;
 
 Action_Token: Action
-  { $$ := UAFLEX.Nodes.To_Action (Scanner.Get_Text); }
+  { $$ := UAFLEX.Nodes.To_Action (Get_Text); }
 ;
 
 %%
@@ -125,6 +125,8 @@ with UAFLEX.Handler;
 ##
 with Ada.Wide_Wide_Text_IO;
 with UAFLEX.Nodes;
+with VSS.Strings;
+with VSS.Strings.Conversions;
 ##
 procedure yyerror (X : Wide_Wide_String) is
 begin
@@ -140,3 +142,7 @@ begin
 end YYLex;
 
 Line : Positive;
+
+function Get_Text return VSS.Strings.Virtual_String is
+  (VSS.Strings.Conversions.To_Virtual_String
+    (Scanner.Get_Text.To_UTF_8_String));

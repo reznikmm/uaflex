@@ -43,6 +43,7 @@
 ------------------------------------------------------------------------------
 
 with Ada.Wide_Wide_Text_IO;
+with VSS.Strings.Conversions;
 with UAFLEX.Nodes;
 
 package body UAFLEX.Generator.OOP_Handler is
@@ -52,12 +53,12 @@ package body UAFLEX.Generator.OOP_Handler is
    --------
 
    procedure Go
-     (Actions : League.String_Vectors.Universal_String_Vector;
+     (Actions : VSS.String_Vectors.Virtual_String_Vector;
       File    : String;
-      Types   : League.Strings.Universal_String;
-      Unit    : League.Strings.Universal_String;
-      Scanner : League.Strings.Universal_String;
-      Tokens  : League.Strings.Universal_String)
+      Types   : VSS.Strings.Virtual_String;
+      Unit    : VSS.Strings.Virtual_String;
+      Scanner : VSS.Strings.Virtual_String;
+      Tokens  : VSS.Strings.Virtual_String)
    is
       procedure P (Text : Wide_Wide_String);
 
@@ -71,31 +72,46 @@ package body UAFLEX.Generator.OOP_Handler is
    begin
       Ada.Wide_Wide_Text_IO.Create (Output, Name => File);
 
-      P ("limited with " & Scanner.To_Wide_Wide_String & ";");
-      P ("with " & Tokens.To_Wide_Wide_String & ";");
+      P
+        ("limited with "
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Scanner)
+         & ";");
+      P ("with " & VSS.Strings.Conversions.To_Wide_Wide_String (Tokens) & ";");
 
       if not Unit.Starts_With (Types) then
-         P ("with " & Types.To_Wide_Wide_String & ";");
+         P
+           ("with "
+            & VSS.Strings.Conversions.To_Wide_Wide_String (Types)
+            & ";");
       end if;
 
       P ("");
-      P ("package " & Unit.To_Wide_Wide_String & " is");
+      P
+        ("package "
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Unit)
+         & " is");
       P ("   pragma Preelaborate;");
       P ("");
       P ("   type Handler is abstract tagged limited null record;");
       P ("");
 
       for J in 1 .. Actions.Length loop
-         P ("   procedure " & Actions.Element (J).To_Wide_Wide_String);
+         P
+           ("   procedure "
+            & VSS.Strings.Conversions.To_Wide_Wide_String
+                (Actions.Element (J)));
          P ("     (Self    : not null access Handler;");
          P
            ("      Scanner : not null access "
-            & Scanner.To_Wide_Wide_String
+            & VSS.Strings.Conversions.To_Wide_Wide_String (Scanner)
             & ".Scanner'Class;");
-         P ("      Rule    : " & Types.To_Wide_Wide_String & ".Rule_Index;");
+         P
+           ("      Rule    : "
+            & VSS.Strings.Conversions.To_Wide_Wide_String (Types)
+            & ".Rule_Index;");
          P
            ("      Token   : out "
-            & Tokens.To_Wide_Wide_String
+            & VSS.Strings.Conversions.To_Wide_Wide_String (Tokens)
             & ".Token_Kind;");
          P ("      Skip    : in out Boolean) is abstract;");
          P ("");
@@ -103,7 +119,7 @@ package body UAFLEX.Generator.OOP_Handler is
 
       P ("   type Handler_Access is access all Handler'Class;");
       P ("");
-      P ("end " & Unit.To_Wide_Wide_String & ";");
+      P ("end " & VSS.Strings.Conversions.To_Wide_Wide_String (Unit) & ";");
 
       Ada.Wide_Wide_Text_IO.Close (Output);
    end Go;
@@ -113,12 +129,12 @@ package body UAFLEX.Generator.OOP_Handler is
    ---------------
 
    procedure On_Accept
-     (Actions : League.String_Vectors.Universal_String_Vector;
+     (Actions : VSS.String_Vectors.Virtual_String_Vector;
       File    : String;
-      Types   : League.Strings.Universal_String;
-      Handler : League.Strings.Universal_String;
-      Scanner : League.Strings.Universal_String;
-      Tokens  : League.Strings.Universal_String)
+      Types   : VSS.Strings.Virtual_String;
+      Handler : VSS.Strings.Virtual_String;
+      Scanner : VSS.Strings.Virtual_String;
+      Tokens  : VSS.Strings.Virtual_String)
    is
       procedure P (Text : Wide_Wide_String);
       procedure N (Text : Wide_Wide_String);
@@ -139,18 +155,27 @@ package body UAFLEX.Generator.OOP_Handler is
    begin
       Ada.Wide_Wide_Text_IO.Create (Output, Name => File);
 
-      P ("separate (" & Scanner.To_Wide_Wide_String & ")");
+      P
+        ("separate ("
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Scanner)
+         & ")");
       P ("procedure On_Accept");
       P
         ("  (Self    : not null access "
-         & Handler.To_Wide_Wide_String
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Handler)
          & ".Handler'Class;");
       P
         ("   Scanner : not null access "
-         & Scanner.To_Wide_Wide_String
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Scanner)
          & ".Scanner'Class;");
-      P ("   Rule    : " & Types.To_Wide_Wide_String & ".Rule_Index;");
-      P ("   Token   : out " & Tokens.To_Wide_Wide_String & ".Token_Kind;");
+      P
+        ("   Rule    : "
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Types)
+         & ".Rule_Index;");
+      P
+        ("   Token   : out "
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Tokens)
+         & ".Token_Kind;");
       P ("   Skip    : in out Boolean) is");
       P ("begin");
       P ("   case Rule is");
@@ -177,7 +202,7 @@ package body UAFLEX.Generator.OOP_Handler is
          P (" =>");
          P
            ("         Self."
-            & Actions.Element (J).To_Wide_Wide_String
+            & VSS.Strings.Conversions.To_Wide_Wide_String (Actions.Element (J))
             & " (Scanner, Rule, Token, Skip);");
          P ("");
       end loop;

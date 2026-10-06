@@ -41,8 +41,8 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
-with League.String_Vectors;
-with League.Strings;
+with VSS.String_Vectors;
+with VSS.Strings;
 with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;
 with UAFLEX.Regexps;
@@ -54,35 +54,36 @@ package UAFLEX.Nodes is
    type Node (Kind : Node_Kind := Node_Kind'First) is record
       case Kind is
          when Text =>
-            Value : League.Strings.Universal_String;
+            Value : VSS.Strings.Virtual_String;
 
          when Rule =>
-            Regexp : League.Strings.Universal_String;
-            Action : League.Strings.Universal_String;
+            Regexp : VSS.Strings.Virtual_String;
+            Action : VSS.Strings.Virtual_String;
 
          when Macro =>
-            Name : League.Strings.Universal_String;
-            Text : League.Strings.Universal_String;
+            Name : VSS.Strings.Virtual_String;
+            Text : VSS.Strings.Virtual_String;
 
          when Name_List =>
-            List : League.String_Vectors.Universal_String_Vector;
+            List : VSS.String_Vectors.Virtual_String_Vector;
       end case;
    end record;
 
    subtype Rule_Node is Node (Rule);
 
-   function To_Node (Value : League.Strings.Universal_String) return Node;
-   function To_Action (Value : League.Strings.Universal_String) return Node;
+   function To_Node (Value : VSS.Strings.Virtual_String) return Node;
+   function To_Action (Value : VSS.Strings.Virtual_String) return Node;
 
    Empty_Name_List : constant Node (Name_List) :=
-     (Kind => Name_List, List => <>);
+     (Kind => Name_List,
+      List => VSS.String_Vectors.Empty_Virtual_String_Vector);
 
-   use type League.Strings.Universal_String;
+   use type VSS.Strings.Virtual_String;
 
    package Macro_Maps is new
      Ada.Containers.Ordered_Maps
-       (League.Strings.Universal_String,   --  Macro name
-        League.Strings.Universal_String);  --  Macro value
+       (VSS.Strings.Virtual_String,   --  Macro name
+        VSS.Strings.Virtual_String);  --  Macro value
 
    package Positive_Vectors is new
      Ada.Containers.Vectors (Index_Type => Positive, Element_Type => Positive);
@@ -94,15 +95,15 @@ package UAFLEX.Nodes is
 
    package Start_Condition_Maps is new
      Ada.Containers.Ordered_Maps
-       (League.Strings.Universal_String,   --  Condition name
+       (VSS.Strings.Virtual_String,   --  Condition name
         Start_Condition);
 
    type Program_Array_Access is access all UAFLEX.Regexps.Program_Array;
 
    --  List of regexp from input file
-   Rules      : League.String_Vectors.Universal_String_Vector;
+   Rules      : VSS.String_Vectors.Virtual_String_Vector;
    --  List of DISTINCT action from input file
-   Actions    : League.String_Vectors.Universal_String_Vector;
+   Actions    : VSS.String_Vectors.Virtual_String_Vector;
    --  Map rule index to action index
    Indexes    : Positive_Vectors.Vector;
    --  Map rule index to input file line number
@@ -117,12 +118,11 @@ package UAFLEX.Nodes is
    Success : Boolean := True;
 
    procedure Add_Start_Conditions
-     (List      : League.String_Vectors.Universal_String_Vector;
-      Exclusive : Boolean);
+     (List : VSS.String_Vectors.Virtual_String_Vector; Exclusive : Boolean);
 
    procedure Add_Rule
-     (RegExp : League.Strings.Universal_String;
-      Action : League.Strings.Universal_String;
+     (RegExp : VSS.Strings.Virtual_String;
+      Action : VSS.Strings.Virtual_String;
       Line   : Positive);
 
 end UAFLEX.Nodes;

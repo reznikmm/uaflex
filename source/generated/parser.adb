@@ -43,6 +43,8 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 with UAFLEX.Nodes;
+with VSS.Strings;
+with VSS.Strings.Conversions;
 with Parser.Goto_Table;
 use  Parser.Goto_Table;
 with Parser_Tokens;
@@ -67,6 +69,10 @@ begin
 end YYLex;
 
 Line : Positive;
+
+function Get_Text return VSS.Strings.Virtual_String is
+  (VSS.Strings.Conversions.To_Virtual_String
+    (Scanner.Get_Text.To_UTF_8_String));
 procedure YYParse is
 
    -- Rename User Defined Packages to Internal Names.
@@ -372,15 +378,15 @@ when 13 =>
 
 when 14 =>
 --# line 107 "../parser.y"
- YYVal := UAFLEX.Nodes.To_Node (Scanner.Get_Text); 
+ YYVal := UAFLEX.Nodes.To_Node (Get_Text); 
 
 when 15 =>
 --# line 111 "../parser.y"
- YYVal := UAFLEX.Nodes.To_Node (Scanner.Get_Text); Line := Handler.Get_Line; 
+ YYVal := UAFLEX.Nodes.To_Node (Get_Text); Line := Handler.Get_Line; 
 
 when 16 =>
 --# line 115 "../parser.y"
- YYVal := UAFLEX.Nodes.To_Action (Scanner.Get_Text); 
+ YYVal := UAFLEX.Nodes.To_Action (Get_Text); 
 
                     when others => null;
                 end case;

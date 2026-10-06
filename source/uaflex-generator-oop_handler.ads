@@ -42,25 +42,25 @@
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
 
-with League.Strings;
-with League.String_Vectors;
+with VSS.Strings;
+with VSS.String_Vectors;
 
 package UAFLEX.Generator.OOP_Handler is
 
    procedure Go
-     (Actions : League.String_Vectors.Universal_String_Vector;
+     (Actions : VSS.String_Vectors.Virtual_String_Vector;
       File    : String;
-      Types   : League.Strings.Universal_String;
-      Unit    : League.Strings.Universal_String;
-      Scanner : League.Strings.Universal_String;
-      Tokens  : League.Strings.Universal_String);
+      Types   : VSS.Strings.Virtual_String;
+      Unit    : VSS.Strings.Virtual_String;
+      Scanner : VSS.Strings.Virtual_String;
+      Tokens  : VSS.Strings.Virtual_String);
 
    procedure On_Accept
-     (Actions : League.String_Vectors.Universal_String_Vector;
+     (Actions : VSS.String_Vectors.Virtual_String_Vector;
       File    : String;
-      Types   : League.Strings.Universal_String;
-      Handler : League.Strings.Universal_String;
-      Scanner : League.Strings.Universal_String;
-      Tokens  : League.Strings.Universal_String);
+      Types   : VSS.Strings.Virtual_String;
+      Handler : VSS.Strings.Virtual_String;
+      Scanner : VSS.Strings.Virtual_String;
+      Tokens  : VSS.Strings.Virtual_String);
 
 end UAFLEX.Generator.OOP_Handler;

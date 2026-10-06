@@ -42,7 +42,7 @@
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
 with UAFLEX.Finite_Automatons;
-with League.Strings;
+with VSS.Strings;
 
 package UAFLEX.Generator.Tables is
 
@@ -67,10 +67,10 @@ package UAFLEX.Generator.Tables is
       Dead_End_Map   : State_Map;
       First_Dead_End : UAFLEX.Finite_Automatons.State;
       First_Final    : UAFLEX.Finite_Automatons.State;
-      Unit           : League.Strings.Universal_String;
+      Unit           : VSS.Strings.Virtual_String;
       File           : String;
-      Types          : League.Strings.Universal_String;
-      Scanner        : League.Strings.Universal_String;
+      Types          : VSS.Strings.Virtual_String;
+      Scanner        : VSS.Strings.Virtual_String;
       Classes        : UAFLEX.Finite_Automatons.Vectors.Vector);
 
    procedure Types
@@ -78,7 +78,7 @@ package UAFLEX.Generator.Tables is
       Dead_End_Map   : State_Map;
       First_Dead_End : UAFLEX.Finite_Automatons.State;
       First_Final    : UAFLEX.Finite_Automatons.State;
-      Unit           : League.Strings.Universal_String;
+      Unit           : VSS.Strings.Virtual_String;
       File           : String;
       Classes        : UAFLEX.Finite_Automatons.Vectors.Vector);
 

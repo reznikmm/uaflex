@@ -44,8 +44,9 @@
 
 with Ada.Command_Line;
 with Ada.Wide_Wide_Text_IO;
-with League.Application;
-with League.Strings;
+with VSS.Application;
+with VSS.String_Vectors;
+with VSS.Strings;
 
 with UAFLEX.Run;
 
@@ -55,15 +56,14 @@ procedure UAFLEX.Driver is
 
    procedure Print_Usage;
 
-   function "+"
-     (Item : Wide_Wide_String) return League.Strings.Universal_String
-   renames League.Strings.To_Universal_String;
+   function "+" (Item : Wide_Wide_String) return VSS.Strings.Virtual_String
+   renames VSS.Strings.To_Virtual_String;
 
-   Handler : League.Strings.Universal_String;
-   Input   : League.Strings.Universal_String;
-   Tokens  : League.Strings.Universal_String;
-   Types   : League.Strings.Universal_String;
-   Scanner : League.Strings.Universal_String;
+   Handler : VSS.Strings.Virtual_String;
+   Input   : VSS.Strings.Virtual_String;
+   Tokens  : VSS.Strings.Virtual_String;
+   Types   : VSS.Strings.Virtual_String;
+   Scanner : VSS.Strings.Virtual_String;
 
    -----------------
    -- Print_Usage --
@@ -93,34 +93,37 @@ procedure UAFLEX.Driver is
    --------------------
 
    procedure Read_Arguments is
-      use League.Strings;
-      Is_Types   : constant Universal_String := +"--types";
-      Is_Scanner : constant Universal_String := +"--scanner";
-      Is_Tokens  : constant Universal_String := +"--tokens";
-      Is_Handler : constant Universal_String := +"--handler";
+      use type VSS.Strings.Virtual_String;
 
-      Last  : constant Natural := League.Application.Arguments.Length;
+      Arguments  : constant VSS.String_Vectors.Virtual_String_Vector :=
+        VSS.Application.Arguments;
+      Is_Types   : constant VSS.Strings.Virtual_String := +"--types";
+      Is_Scanner : constant VSS.Strings.Virtual_String := +"--scanner";
+      Is_Tokens  : constant VSS.Strings.Virtual_String := +"--tokens";
+      Is_Handler : constant VSS.Strings.Virtual_String := +"--handler";
+
+      Last  : constant Natural := Arguments.Length;
       Index : Positive := 1;
    begin
       while Index <= Last loop
          declare
-            Next : constant League.Strings.Universal_String :=
-              League.Application.Arguments.Element (Index);
+            Next : constant VSS.Strings.Virtual_String :=
+              Arguments.Element (Index);
          begin
             if Index = Last then
                Input := Next;
             elsif Next = Is_Types then
                Index := Index + 1;
-               Types := League.Application.Arguments.Element (Index);
+               Types := Arguments.Element (Index);
             elsif Next = Is_Scanner then
                Index := Index + 1;
-               Scanner := League.Application.Arguments.Element (Index);
+               Scanner := Arguments.Element (Index);
             elsif Next = Is_Tokens then
                Index := Index + 1;
-               Tokens := League.Application.Arguments.Element (Index);
+               Tokens := Arguments.Element (Index);
             elsif Next = Is_Handler then
                Index := Index + 1;
-               Handler := League.Application.Arguments.Element (Index);
+               Handler := Arguments.Element (Index);
             end if;
 
             Index := Index + 1;

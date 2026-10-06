@@ -41,20 +41,22 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
-with Ada.Strings.Wide_Wide_Fixed;
 with Ada.Wide_Wide_Text_IO;
 with UAFLEX.Nodes;
-with League.Characters;
-with League.Regexps;
-with League.Strings;
-with League.String_Vectors;
+with VSS.Characters;
+with VSS.Regular_Expressions;
+with VSS.String_Vectors;
+with VSS.Strings.Character_Iterators;
+with VSS.Strings.Conversions;
 
 package body UAFLEX.Expand is
 
-   procedure Expand_Macro
-     (Text : in out League.Strings.Universal_String; Line : Positive);
+   use type VSS.Characters.Virtual_Character;
 
-   procedure To_Regexp (Text : in out League.Strings.Universal_String);
+   procedure Expand_Macro
+     (Text : in out VSS.Strings.Virtual_String; Line : Positive);
+
+   procedure To_Regexp (Text : in out VSS.Strings.Virtual_String);
 
    Macro_1 : constant Wide_Wide_String := "^\{([a-zA-Z][a-zA-Z0-9_]*)\}";
    Macro_2 : constant Wide_Wide_String := "[^pP]\{([a-zA-Z][a-zA-Z0-9_]*)\}";
@@ -64,86 +66,97 @@ package body UAFLEX.Expand is
    Macro_Pattern : constant Wide_Wide_String :=
      Macro_1 & '|' & Macro_2 & '|' & Macro_3;
 
-   Macro_Reference : constant League.Strings.Universal_String :=
-     League.Strings.To_Universal_String (Macro_Pattern);
+   Macro_Reference : constant VSS.Strings.Virtual_String :=
+     VSS.Strings.To_Virtual_String (Macro_Pattern);
 
-   Macro : constant League.Regexps.Regexp_Pattern :=
-     League.Regexps.Compile (Macro_Reference);
+   Macro : constant VSS.Regular_Expressions.Regular_Expression :=
+     VSS.Regular_Expressions.To_Regular_Expression (Macro_Reference);
 
-   Syntax : constant Wide_Wide_String := "\^$.*+?()[]{}|";
+   function Is_Syntax (Item : VSS.Characters.Virtual_Character) return Boolean
+   is (Item
+       in '\'
+        | '^'
+        | '$'
+        | '.'
+        | '*'
+        | '+'
+        | '?'
+        | '('
+        | ')'
+        | '['
+        | ']'
+        | '{'
+        | '}'
+        | '|');
    --  Characters, which have a special meaning in ECMAScript regexp, and
    --  can be escaped by a backslash.
 
-   Escape : constant Wide_Wide_String := "aefnrtvcuUpP";
-
-   function Is_Syntax
-     (Item : League.Characters.Universal_Character) return Boolean;
-
-   function Is_Escape
-     (Item : League.Characters.Universal_Character) return Boolean;
-
-   ---------------
-   -- Is_Escape --
-   ---------------
-
-   function Is_Escape
-     (Item : League.Characters.Universal_Character) return Boolean is
-   begin
-      return
-        Ada.Strings.Wide_Wide_Fixed.Index
-          (Escape, (1 => Item.To_Wide_Wide_Character))
-        /= 0;
-   end Is_Escape;
-
-   ---------------
-   -- Is_Syntax --
-   ---------------
-
-   function Is_Syntax
-     (Item : League.Characters.Universal_Character) return Boolean is
-   begin
-      return
-        Ada.Strings.Wide_Wide_Fixed.Index
-          (Syntax, (1 => Item.To_Wide_Wide_Character))
-        /= 0;
-   end Is_Syntax;
+   function Is_Escape (Item : VSS.Characters.Virtual_Character) return Boolean
+   is (Item
+       in 'a'
+        | 'e'
+        | 'f'
+        | 'n'
+        | 'r'
+        | 't'
+        | 'v'
+        | 'c'
+        | 'u'
+        | 'U'
+        | 'p'
+        | 'P');
 
    ------------------
    -- Expand_Macro --
    ------------------
 
    procedure Expand_Macro
-     (Text : in out League.Strings.Universal_String; Line : Positive)
+     (Text : in out VSS.Strings.Virtual_String; Line : Positive)
    is
-      Found : constant League.Regexps.Regexp_Match := Macro.Find_Match (Text);
+      Found : constant VSS.Regular_Expressions.Regular_Expression_Match :=
+        Macro.Match (Text);
       Index : Positive := 1;
    begin
-      if not Found.Is_Matched then
+      if not Found.Has_Match then
          return;
       end if;
 
       for J in 1 .. 3 loop
-         if Found.Last_Index (J) > Found.First_Index (J) then
+         if Found.Has_Capture (J) then
             Index := J;
          end if;
       end loop;
 
       declare
-         Name : constant League.Strings.Universal_String :=
-           Found.Capture (Index);
+         Name : constant VSS.Strings.Virtual_String := Found.Captured (Index);
          Pos  : constant Nodes.Macro_Maps.Cursor := Nodes.Macros.Find (Name);
       begin
          if Nodes.Macro_Maps.Has_Element (Pos) then
-            Text.Replace
-              (Found.First_Index (Index) - 1,
-               Found.Last_Index (Index) + 1,
-               Nodes.Macro_Maps.Element (Pos));
+            declare
+               First : VSS.Strings.Character_Iterators.Character_Iterator :=
+                 Text.At_Character (Found.First_Marker (Index));
+               --  Opening brace is just before the macro name
+               Last  : VSS.Strings.Character_Iterators.Character_Iterator :=
+                 Text.At_Character (Found.Last_Marker (Index));
+               --  Closing brace is just after the macro name
+            begin
+               if First.Backward and then Last.Forward then
+                  declare
+                     Result : VSS.Strings.Virtual_String :=
+                       Text.Head_Before (First);
+                  begin
+                     Result.Append (Nodes.Macro_Maps.Element (Pos));
+                     Result.Append (Text.Tail_After (Last));
+                     Text := Result;
+                  end;
+               end if;
+            end;
          else
             Ada.Wide_Wide_Text_IO.Put_Line
               ("Line "
                & Natural'Wide_Wide_Image (Line)
                & " Macro's definition not found for: "
-               & Name.To_Wide_Wide_String);
+               & VSS.Strings.Conversions.To_Wide_Wide_String (Name));
             Nodes.Success := False;
 
             return;
@@ -158,11 +171,11 @@ package body UAFLEX.Expand is
    -------------
 
    procedure RegExps is
-      Result : League.String_Vectors.Universal_String_Vector;
+      Result : VSS.String_Vectors.Virtual_String_Vector;
    begin
       for J in 1 .. Nodes.Rules.Length loop
          declare
-            Item : League.Strings.Universal_String := Nodes.Rules.Element (J);
+            Item : VSS.Strings.Virtual_String := Nodes.Rules.Element (J);
          begin
             Expand_Macro (Item, Nodes.Lines.Element (J));
             To_Regexp (Item);
@@ -177,20 +190,19 @@ package body UAFLEX.Expand is
    -- To_Regexp --
    ---------------
 
-   procedure To_Regexp (Text : in out League.Strings.Universal_String) is
+   procedure To_Regexp (Text : in out VSS.Strings.Virtual_String) is
       type States is (Normal, In_Quote, Masked, Class, Category);
       --  [/First/ ^ /C1/ x /c2/ - /c3/ y ]
       type Class_States is (First, C1, C2, C3);
-      Result   : League.Strings.Universal_String;
+      Result   : VSS.Strings.Virtual_String;
       State    : States := Normal;
       In_Class : Class_States;
+      Cursor   : VSS.Strings.Character_Iterators.Character_Iterator :=
+        Text.At_First_Character;
    begin
-      for J in 1 .. Text.Length loop
+      while Cursor.Has_Element loop
          declare
-            use type League.Characters.Universal_Character;
-
-            Item : constant League.Characters.Universal_Character :=
-              Text.Element (J);
+            Item : constant VSS.Characters.Virtual_Character := Cursor.Element;
          begin
             case State is
                when Normal   =>
@@ -289,6 +301,8 @@ package body UAFLEX.Expand is
                   end if;
             end case;
          end;
+
+         exit when not Cursor.Forward;
       end loop;
 
       Text := Result;

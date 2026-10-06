@@ -43,7 +43,7 @@
 ------------------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;
-with League.Strings;
+with VSS.Strings;
 with UAFLEX.Character_Sets;
 with UAFLEX.Graphs;
 with UAFLEX.Regexps;
@@ -68,9 +68,9 @@ package UAFLEX.Finite_Automatons is
 
    package Start_Maps is new
      Ada.Containers.Ordered_Maps
-       (Key_Type     => League.Strings.Universal_String,
+       (Key_Type     => VSS.Strings.Virtual_String,
         Element_Type => State,
-        "<"          => League.Strings."<");
+        "<"          => VSS.Strings."<");
 
    type DFA is limited record
       Start         : Start_Maps.Map;
@@ -85,7 +85,7 @@ package UAFLEX.Finite_Automatons is
 
    procedure Compile
      (Self    : in out DFA_Constructor;
-      Start   : League.Strings.Universal_String;
+      Start   : VSS.Strings.Virtual_String;
       List    : UAFLEX.Regexps.Program_Array;
       Actions : Rule_Index_Array);
 

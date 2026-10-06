@@ -69,7 +69,7 @@ package body UAFLEX.Finite_Automatons is
 
    procedure Compile
      (Self    : in out DFA_Constructor;
-      Start   : League.Strings.Universal_String;
+      Start   : VSS.Strings.Virtual_String;
       List    : UAFLEX.Regexps.Program_Array;
       Actions : Rule_Index_Array)
    is

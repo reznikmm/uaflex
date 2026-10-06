@@ -46,6 +46,7 @@ with Ada.Containers;
 with Ada.Containers.Ordered_Maps;
 with Ada.Strings.Wide_Wide_Fixed;
 with Ada.Wide_Wide_Text_IO;
+with VSS.Strings.Conversions;
 with UAFLEX.Character_Sets;
 with VSS.Unicode;
 
@@ -87,10 +88,10 @@ package body UAFLEX.Generator.Tables is
       Dead_End_Map   : State_Map;
       First_Dead_End : UAFLEX.Finite_Automatons.State;
       First_Final    : UAFLEX.Finite_Automatons.State;
-      Unit           : League.Strings.Universal_String;
+      Unit           : VSS.Strings.Virtual_String;
       File           : String;
-      Types          : League.Strings.Universal_String;
-      Scanner        : League.Strings.Universal_String;
+      Types          : VSS.Strings.Virtual_String;
+      Scanner        : VSS.Strings.Virtual_String;
       Classes        : UAFLEX.Finite_Automatons.Vectors.Vector)
    is
       pragma Unreferenced (Types);
@@ -370,8 +371,14 @@ package body UAFLEX.Generator.Tables is
 
       P ("with Matreshka.Internals.Unicode.Ucd;");
       P ("");
-      P ("separate (" & Scanner.To_Wide_Wide_String & ")");
-      P ("package body " & Unit.To_Wide_Wide_String & " is");
+      P
+        ("separate ("
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Scanner)
+         & ")");
+      P
+        ("package body "
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Unit)
+         & " is");
       P ("   subtype First_Stage_Index is");
       P ("     Matreshka.Internals.Unicode.Ucd.First_Stage_Index;");
       P ("");
@@ -417,7 +424,7 @@ package body UAFLEX.Generator.Tables is
       P ("      return Element (First, Value);");
       P ("   end To_Class;");
       P ("");
-      P ("end " & Unit.To_Wide_Wide_String & ";");
+      P ("end " & VSS.Strings.Conversions.To_Wide_Wide_String (Unit) & ";");
    end Go;
 
    ---------------------------
@@ -515,7 +522,7 @@ package body UAFLEX.Generator.Tables is
       Dead_End_Map   : State_Map;
       First_Dead_End : UAFLEX.Finite_Automatons.State;
       First_Final    : UAFLEX.Finite_Automatons.State;
-      Unit           : League.Strings.Universal_String;
+      Unit           : VSS.Strings.Virtual_String;
       File           : String;
       Classes        : Char_Set_Vectors.Vector)
    is
@@ -536,7 +543,8 @@ package body UAFLEX.Generator.Tables is
       begin
          P
            ("   "
-            & Start_Maps.Key (Cursor).To_Wide_Wide_String
+            & VSS.Strings.Conversions.To_Wide_Wide_String
+                (Start_Maps.Key (Cursor))
             & " : constant State :="
             & State'Wide_Wide_Image
                 (Dead_End_Map (Start_Maps.Element (Cursor)) - 1)
@@ -548,7 +556,10 @@ package body UAFLEX.Generator.Tables is
 
       --  Debug.Print_Character_Classes (Classes);
 
-      P ("package " & Unit.To_Wide_Wide_String & " is");
+      P
+        ("package "
+         & VSS.Strings.Conversions.To_Wide_Wide_String (Unit)
+         & " is");
       P ("   pragma Preelaborate;");
       P ("");
       P
@@ -581,7 +592,7 @@ package body UAFLEX.Generator.Tables is
          & Natural'Wide_Wide_Image (Nodes.Rules.Length)
          & ";");
       P ("");
-      P ("end " & Unit.To_Wide_Wide_String & ";");
+      P ("end " & VSS.Strings.Conversions.To_Wide_Wide_String (Unit) & ";");
    end Types;
 
 end UAFLEX.Generator.Tables;
