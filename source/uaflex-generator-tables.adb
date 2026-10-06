@@ -50,7 +50,6 @@ with VSS.Strings.Conversions;
 with UAFLEX.Character_Sets;
 with VSS.Unicode;
 
-with Matreshka.Internals.Unicode.Ucd;
 with UAFLEX.Graphs;
 --  with Debug;
 
@@ -66,11 +65,11 @@ package body UAFLEX.Generator.Tables is
 
    subtype Character_Class is UAFLEX.Graphs.Edge_Identifier'Base;
 
-   subtype First_Stage_Index is
-     Matreshka.Internals.Unicode.Ucd.First_Stage_Index;
+   type First_Stage_Index is mod 16#1100#;
+   --  Index of a 256 characters block, 16#1100# blocks cover all code points
 
-   subtype Second_Stage_Index is
-     Matreshka.Internals.Unicode.Ucd.Second_Stage_Index;
+   type Second_Stage_Index is mod 16#100#;
+   --  Index of a character inside a block
 
    type First_Stage_Array is array (First_Stage_Index) of Natural;
 
@@ -369,8 +368,6 @@ package body UAFLEX.Generator.Tables is
    begin
       Ada.Wide_Wide_Text_IO.Create (Output, Name => File);
 
-      P ("with Matreshka.Internals.Unicode.Ucd;");
-      P ("");
       P
         ("separate ("
          & VSS.Strings.Conversions.To_Wide_Wide_String (Scanner)
@@ -379,11 +376,9 @@ package body UAFLEX.Generator.Tables is
         ("package body "
          & VSS.Strings.Conversions.To_Wide_Wide_String (Unit)
          & " is");
-      P ("   subtype First_Stage_Index is");
-      P ("     Matreshka.Internals.Unicode.Ucd.First_Stage_Index;");
+      P ("   type First_Stage_Index is mod 16#1100#;");
       P ("");
-      P ("   subtype Second_Stage_Index is");
-      P ("     Matreshka.Internals.Unicode.Ucd.Second_Stage_Index;");
+      P ("   type Second_Stage_Index is mod 16#100#;");
       P ("");
       P
         ("   type Second_Stage_Array is array (Second_Stage_Index) "
@@ -410,18 +405,14 @@ package body UAFLEX.Generator.Tables is
       P ("      return Switch_Table (S, Class);");
       P ("   end Switch;");
       P ("");
-      P
-        ("   function To_Class (Value : "
-         & "Matreshka.Internals.Unicode.Code_Point)");
+      P ("   function To_Class (Value : Wide_Wide_Character)");
       P ("     return Character_Class");
       P ("   is");
-      P
-        ("      function Element is new "
-         & "Matreshka.Internals.Unicode.Ucd.Generic_Element");
-      P ("        (Character_Class, Second_Stage_Array,");
-      P ("         Second_Stage_Array_Access, First_Stage_Array);");
+      P ("      Code : constant Natural := Wide_Wide_Character'Pos (Value);");
       P ("   begin");
-      P ("      return Element (First, Value);");
+      P ("      return");
+      P ("        First (First_Stage_Index (Code / 256)).all");
+      P ("          (Second_Stage_Index (Code mod 256));");
       P ("   end To_Class;");
       P ("");
       P ("end " & VSS.Strings.Conversions.To_Wide_Wide_String (Unit) & ";");

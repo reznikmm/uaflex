@@ -42,11 +42,9 @@
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
 
-with Matreshka.Internals.Unicode;
-
 package Abstract_Sources is
 
-   subtype Code_Unit_32 is Matreshka.Internals.Unicode.Code_Unit_32;
+   type Code_Unit_32 is mod 2**32;
 
    type Abstract_Source is limited interface;
 

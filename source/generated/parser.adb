@@ -44,7 +44,6 @@
 with Ada.Wide_Wide_Text_IO;
 with UAFLEX.Nodes;
 with VSS.Strings;
-with VSS.Strings.Conversions;
 with Parser.Goto_Table;
 use  Parser.Goto_Table;
 with Parser_Tokens;
@@ -71,8 +70,7 @@ end YYLex;
 Line : Positive;
 
 function Get_Text return VSS.Strings.Virtual_String is
-  (VSS.Strings.Conversions.To_Virtual_String
-    (Scanner.Get_Text.To_UTF_8_String));
+  (VSS.Strings.To_Virtual_String (Scanner.Get_Text));
 procedure YYParse is
 
    -- Rename User Defined Packages to Internal Names.

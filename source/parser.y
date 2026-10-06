@@ -126,7 +126,6 @@ with UAFLEX.Handler;
 with Ada.Wide_Wide_Text_IO;
 with UAFLEX.Nodes;
 with VSS.Strings;
-with VSS.Strings.Conversions;
 ##
 procedure yyerror (X : Wide_Wide_String) is
 begin
@@ -144,5 +143,4 @@ end YYLex;
 Line : Positive;
 
 function Get_Text return VSS.Strings.Virtual_String is
-  (VSS.Strings.Conversions.To_Virtual_String
-    (Scanner.Get_Text.To_UTF_8_String));
+  (VSS.Strings.To_Virtual_String (Scanner.Get_Text));

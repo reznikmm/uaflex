@@ -43,7 +43,6 @@
 ------------------------------------------------------------------------------
 
 with Abstract_Sources;
-with League.Strings;
 with UAFLEX.Handlers;
 with UAFLEX.Lexer_Types;
 with Parser_Tokens;
@@ -74,8 +73,7 @@ package UAFLEX.Scanners is
 
    procedure Move_Back (Self : in out Scanner'Class; Count : Positive) is null;
 
-   function Get_Text
-     (Self : Scanner'Class) return League.Strings.Universal_String;
+   function Get_Text (Self : Scanner'Class) return Wide_Wide_String;
 
    function Get_Token_Length (Self : Scanner'Class) return Positive;
    function Get_Token_Position (Self : Scanner'Class) return Positive;

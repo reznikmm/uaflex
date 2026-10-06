@@ -44,7 +44,7 @@
 package UAFLEX.Lexer_Types is
    pragma Preelaborate;
 
-   type State is mod +85;
+   type State is mod +86;
    subtype Looping_State is State range 0 .. 72;
    subtype Final_State is State range 28 .. State'Last - 1;
 

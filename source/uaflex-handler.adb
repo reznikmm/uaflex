@@ -135,7 +135,11 @@ package body UAFLEX.Handler is
    begin
       Self.Check_New_Line;
       Token := Parser_Tokens.Action;
-      Self.Line := Self.Line + Scanner.Get_Text.Count (NL);
+      for Item of Scanner.Get_Text loop
+         if Item = NL then
+            Self.Line := Self.Line + 1;
+         end if;
+      end loop;
       Skip := False;
    end On_Action;
 

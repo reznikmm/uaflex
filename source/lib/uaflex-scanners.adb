@@ -41,13 +41,10 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
-with Matreshka.Internals.Unicode;
-
 package body UAFLEX.Scanners is
 
    package Tables is
-      function To_Class (Value : Matreshka.Internals.Unicode.Code_Point)
-        return Character_Class;
+      function To_Class (Value : Wide_Wide_Character) return Character_Class;
       pragma Inline (To_Class);
 
       function Switch (S : State; Class : Character_Class) return State;
@@ -94,20 +91,16 @@ package body UAFLEX.Scanners is
    -- Get_Text --
    --------------
 
-   function Get_Text
-     (Self : Scanner'Class)
-      return League.Strings.Universal_String
-   is
+   function Get_Text (Self : Scanner'Class) return Wide_Wide_String is
    begin
       if Self.From <= Self.To then
-         return League.Strings.To_Universal_String
-           (Self.Buffer (Self.From .. Self.To));
+         return Self.Buffer (Self.From .. Self.To);
       elsif Self.From = Self.To + 1 then
-         return League.Strings.Empty_Universal_String;
+         return "";
       else
-         return League.Strings.To_Universal_String
-           (Self.Buffer (Self.From .. Self.Buffer'Last)
-              & Self.Buffer (1 .. Self.To));
+         return
+           Self.Buffer (Self.From .. Self.Buffer'Last)
+           & Self.Buffer (1 .. Self.To);
       end if;
    end Get_Text;
 
@@ -244,7 +237,7 @@ package body UAFLEX.Scanners is
             Self.Classes (Pos) := Error_Character;
             return;
          else
-            Self.Classes (Pos) := To_Class (Next);
+            Self.Classes (Pos) := To_Class (Self.Buffer (Pos));
 
             if Pos = Self.Buffer'Last then
                Pos := 1;

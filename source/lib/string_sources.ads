@@ -43,8 +43,7 @@
 ------------------------------------------------------------------------------
 
 with Abstract_Sources;
-with League.Strings;
-with League.Strings.Cursors.Characters;
+with Ada.Strings.Wide_Wide_Unbounded;
 
 package String_Sources is
 
@@ -56,13 +55,14 @@ package String_Sources is
 
    procedure Create
      (Self : out String_Source;
-      Text : League.Strings.Universal_String);
+      Text : Wide_Wide_String);
 
 private
 
    type String_Source is new Abstract_Sources.Abstract_Source with record
-      Text   : League.Strings.Universal_String;
-      Cursor : League.Strings.Cursors.Characters.Character_Cursor;
+      Text  : Ada.Strings.Wide_Wide_Unbounded.Unbounded_Wide_Wide_String;
+      Index : Positive := 1;
+      --  Position of the next character to return
    end record;
 
 end String_Sources;

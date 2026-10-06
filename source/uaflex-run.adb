@@ -51,7 +51,6 @@ with UAFLEX.Expand;
 with UAFLEX.Generator.Tables;
 with UAFLEX.Generator.OOP_Handler;
 with UAFLEX.Nodes;
-with League.Strings;
 with VSS.String_Vectors;
 with VSS.Transformers.Casing;
 with UAFLEX.Finite_Automatons;
@@ -164,8 +163,8 @@ is
    Classes : UAFLEX.Finite_Automatons.Vectors.Vector;
 begin
    Source.Create
-     (League.Strings.From_UTF_8_String
-        (To_String (Read_File (To_String (Input)))));
+     (VSS.Strings.Conversions.To_Wide_Wide_String
+        (Read_File (To_String (Input))));
    Parser.Scanner.Set_Source (Source'Unchecked_Access);
    Parser.Scanner.Set_Handler (Parser.Handler'Unchecked_Access);
 
