@@ -1,6 +1,7 @@
---  SPDX-FileCopyrightText: 2026 Max Reznik <reznikmm@gmail.com>
+--  SPDX-FileCopyrightText: 2008-2026 Max Reznik <reznikmm@gmail.com>
 --
 --  SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+---------------------------------------------------------------------
 
 --  VSS.Regular_Expressions.ECMA_Parser is a private generic child, so it can
 --  be named only inside the hierarchy of VSS.Regular_Expressions. This child
